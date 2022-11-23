@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+#include "PlayerClass.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
-#include "PlayerClass.h"
+#include "Input/Events.h"
+#include "DebugString.h"
 
 // Sets default values
 APlayerClass::APlayerClass()
@@ -48,6 +48,9 @@ void APlayerClass::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("Forward", this, &APlayerClass::MoveForward);
 	PlayerInputComponent->BindAxis("Right", this, &APlayerClass::MoveRight);
 
+	PlayerInputComponent->BindVectorAxis("Tilt", this, &APlayerClass::TiltMovement);
+
+
 }
 
 void APlayerClass::MoveForward(float value)
@@ -62,4 +65,9 @@ void APlayerClass::MoveRight(float value)
 	PlayerPosition.Y += value;
 	PlayerRotation.Z += value;
 	PlayerPosition.Y = FMath::Clamp(PlayerPosition.Y, -PlayerMaxWidth, PlayerMaxWidth);
+}
+
+void APlayerClass::TiltMovement(FVector value)
+{
+	Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
 }

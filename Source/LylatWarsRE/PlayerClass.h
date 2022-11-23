@@ -48,6 +48,8 @@ protected:
 
 	void MoveRight(float value);
 
+	void TiltMovement(FVector value);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
