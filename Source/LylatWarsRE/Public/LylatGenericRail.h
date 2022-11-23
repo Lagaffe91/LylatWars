@@ -48,12 +48,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void SpawnActorOnRail();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private :
 	void InitRail();
-	void SpawnActorOnRail();
+	
 	void UpdateActorTransform(const float &Time);
 };

@@ -45,6 +45,9 @@ void ALylatGenericRail::InitRail()
 
 void ALylatGenericRail::SpawnActorOnRail()
 {
+	if (spawnedActor)
+		return;
+
 	if (ActorToSpawn)
 	{
 		if (SplineComponent)
