@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GenericRail.generated.h"
+
+#include "LylatGenericRail.generated.h"
 
 UCLASS()
-class LYLATWARSRE_API AGenericRail : public AActor
+class LYLATWARSRE_API ALylatGenericRail : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
-	AGenericRail();
+	ALylatGenericRail();
 			
 	/*Spline component defining the path of the rail*/
 	UPROPERTY(EditAnywhere, Category = "Generic Rail")

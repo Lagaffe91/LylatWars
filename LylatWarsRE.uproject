@@ -2,5 +2,15 @@
 	"FileVersion": 3,
 	"EngineAssociation": "{23A5A2F2-432C-FABF-96F6-F1B4AC43E663}",
 	"Category": "",
-	"Description": ""
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "LylatWarsRE",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
 }

@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GenericRail.h"
+#include "LylatGenericRail.h"
 
 #include "Components/SplineComponent.h"
 
 // Sets default values
-AGenericRail::AGenericRail()
+ALylatGenericRail::ALylatGenericRail()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,7 +14,7 @@ AGenericRail::AGenericRail()
 }
 
 // Called when the game starts or when spawned
-void AGenericRail::BeginPlay()
+void ALylatGenericRail::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -22,7 +22,7 @@ void AGenericRail::BeginPlay()
 }
 
 // Called every frame
-void AGenericRail::Tick(float DeltaTime)
+void ALylatGenericRail::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -37,13 +37,13 @@ void AGenericRail::Tick(float DeltaTime)
 	}
 }
 
-void AGenericRail::InitRail()
+void ALylatGenericRail::InitRail()
 {
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Component"));
 	RootComponent = SplineComponent;
 }
 
-void AGenericRail::SpawnActorOnRail()
+void ALylatGenericRail::SpawnActorOnRail()
 {
 	if (ActorToSpawn)
 	{
@@ -71,7 +71,7 @@ void AGenericRail::SpawnActorOnRail()
 	}
 }
 
-void AGenericRail::UpdateActorTransform(const float& Time)
+void ALylatGenericRail::UpdateActorTransform(const float& Time)
 {
 	if (this->spawnedActor && this->SplineComponent)
 		this->spawnedActor->SetActorTransform(this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World));
