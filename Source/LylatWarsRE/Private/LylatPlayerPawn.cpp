@@ -19,6 +19,9 @@ ALylatPlayerPawn::ALylatPlayerPawn()
 	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
 	PlayerMesh->SetupAttachment(base);
 
+	PlayerTrailMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerShipTrailMesh"));
+	PlayerTrailMesh->SetupAttachment(PlayerMesh);
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraPosition.X = CameraDistance;
 	Camera->SetRelativeLocationAndRotation(CameraPosition, FQuat::MakeFromEuler(CameraRotation));
@@ -31,6 +34,8 @@ void ALylatPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+	DefaultTrailSize = PlayerTrailMesh->GetRelativeScale3D();
+	LastPosition = GetActorLocation();
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -49,19 +54,22 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 
 void ALylatPlayerPawn::MovementTiltInput(FVector value)
 {
-	//Debug("%.2f", 0.0f);
+	Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
 }
 
 // Called every frame
 void ALylatPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector Position = GetActorLocation();
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
 	CameraPosition.X = CameraDistance;
 	CameraPosition.Z = PlayerPosition.Z * CameraFollowRatio + (1 - CameraFollowRatio) * (PlayerPosition.Z / PlayerPlaneSize.Y * 2.0f) * (CameraDistance * (ViewportSize.Y / ViewportSize.X) + PlayerPlaneSize.Y * 0.5f);
 	CameraPosition.Y = PlayerPosition.Y * CameraFollowRatio + (1 - CameraFollowRatio) * (PlayerPosition.Y / PlayerPlaneSize.X * 2.0f) * (CameraDistance + PlayerPlaneSize.X * 0.5f);
 	Camera->SetRelativeLocation(CameraPosition);
+	PlayerTrailMesh->SetRelativeScale3D(FVector(PlayerTrailLength * (Position - LastPosition).Size() / DeltaTime,1,1) * DefaultTrailSize);
+	LastPosition = Position;
 }
 
 // Called to bind functionality to input

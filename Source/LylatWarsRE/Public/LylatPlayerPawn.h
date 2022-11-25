@@ -15,6 +15,9 @@ public:
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* PlayerMesh;
 
+	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly)
+		class UStaticMeshComponent* PlayerTrailMesh;
+
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly)
 		class UCameraComponent* Camera;
 
@@ -58,6 +61,10 @@ public:
 	UPROPERTY(Category = Movement, EditAnywhere)
 		float PlayerUnturnSpeed = 10.0f;
 
+	/** Player trail length factor, depends on speed */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float PlayerTrailLength = 1.0f;
+
 	// Sets default values for this pawn's properties
 	ALylatPlayerPawn();
 
@@ -70,6 +77,8 @@ protected:
 	void MovementTiltInput(FVector value);
 
 	FVector2D ViewportSize;
+	FVector DefaultTrailSize;
+	FVector LastPosition;
 
 public:	
 	// Called every frame
