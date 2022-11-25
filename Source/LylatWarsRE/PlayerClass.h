@@ -50,6 +50,8 @@ protected:
 
 	void TiltMovement(FVector value);
 
+	FVector2D ViewportSize;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -30,7 +30,7 @@ APlayerClass::APlayerClass()
 void APlayerClass::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 }
 
 // Called every frame
@@ -49,22 +49,20 @@ void APlayerClass::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("Right", this, &APlayerClass::MoveRight);
 
 	PlayerInputComponent->BindVectorAxis("Tilt", this, &APlayerClass::TiltMovement);
-
-
 }
 
 void APlayerClass::MoveForward(float value)
 {
 	PlayerPosition.Z += value;
 	PlayerRotation.Y += value;
-	PlayerPosition.Z = FMath::Clamp(PlayerPosition.Z, -PlayerMaxHeight, PlayerMaxHeight);
+	PlayerPosition.Z = FMath::Clamp(PlayerPosition.Z, -ViewportSize.Y / 10, ViewportSize.Y / 10);
 }
 
 void APlayerClass::MoveRight(float value)
 {
 	PlayerPosition.Y += value;
 	PlayerRotation.Z += value;
-	PlayerPosition.Y = FMath::Clamp(PlayerPosition.Y, -PlayerMaxWidth, PlayerMaxWidth);
+	PlayerPosition.Y = FMath::Clamp(PlayerPosition.Y, -ViewportSize.X / 10, ViewportSize.X / 10);
 }
 
 void APlayerClass::TiltMovement(FVector value)
