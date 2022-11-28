@@ -27,6 +27,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		AActor* spawnedActor; //TODO : Better typing ? AActor kinda suck
 
+	UPROPERTY(BlueprintReadOnly)
+		TArray<TSubclassOf<AActor>> ActorsOnRail;
+
 	/*Rail will start to drag the actor after this delay*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Generic Rail|Parameters", meta = (ClampMin = "0"))
 		float railStartDelay = 0;
@@ -38,6 +41,10 @@ public:
 	/*"Scale" of the speed. To be multiplied with railSpeed.*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters", meta = (ClampMin = "0")) //Can change speed on the fly
 		int speedMultiplier = 100;
+
+	/**If true, will spawn ActorToSpawn on startup*/
+	UPROPERTY(EditAnywhere, Category = "Generic Rail|Parameters")
+		bool SpawnActor = true;
 
 protected :
 	/*Time ealapsed*/
@@ -54,8 +61,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void JoinRail(TSubclassOf<AActor> Actor);
+
 private :
 	void InitRail();
 	
-	void UpdateActorTransform(const float &Time);
+	void UpdateActorTransform(TSubclassOf<AActor> Actor, const float& Time);
+	void UpdateActorTransform(AActor *Actor, const float& Time);
+	void UpdateAllActorsTransform(const float& Time);
 };
