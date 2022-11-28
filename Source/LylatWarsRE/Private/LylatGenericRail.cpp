@@ -52,9 +52,9 @@ void ALylatGenericRail::Tick(float DeltaTime)
 				this->RailEnded();
 			}
 		}
-	}
 
-	this->UpdateAllActorsTransform(railTime);
+		this->UpdateAllActorsTransform(railTime);
+	}
 }
 
 void ALylatGenericRail::JoinRail(TSubclassOf<AActor> Actor)
