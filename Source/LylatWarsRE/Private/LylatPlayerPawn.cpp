@@ -3,6 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"	
 
 #include "DebugString.h"
 
@@ -50,7 +51,7 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 
 void ALylatPlayerPawn::MovementGyroInput(FVector value)
 {
-	Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
+	//Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
 }
 
 void ALylatPlayerPawn::ActionBarrelRoll()
@@ -87,6 +88,8 @@ void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
 	length = FMath::Clamp(length, 0.001f, 50.0f);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(length, 1, 1) * DefaultTrailSize);
 	LastPosition = Position;
+
+	ComputeCrosshairPosition();
 }
 
 void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
@@ -129,3 +132,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("BarrelRoll", IE_Pressed, this, &ALylatPlayerPawn::ActionBarrelRoll);
 }
 
+void ALylatPlayerPawn::ComputeCrosshairPosition()
+{
+	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->PlayerMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
+}
