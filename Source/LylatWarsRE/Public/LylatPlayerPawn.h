@@ -65,6 +65,22 @@ public:
 	UPROPERTY(Category = Movement, EditAnywhere)
 		float PlayerTrailLength = 1.0f;
 
+	/** Length of the Barrel Roll animation (in seconds) */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float BarrelRollLength = 1.0f;
+
+	/** Multiplier for the Barrel Roll animation speed */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float BarrelRollSpeed = 1.0f;
+
+	/** Multiplier for the Barrel Roll animation friction */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float BarrelRollFriction = 2.0f;
+
+	/** Cooldown for the Barrel Roll animation */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float BarrelRollCooldown = 3.0f;
+
 	// Sets default values for this pawn's properties
 	ALylatPlayerPawn();
 
@@ -74,11 +90,20 @@ protected:
 
 	void MoveUpInput(float input);
 	void MoveRightInput(float input);
-	void MovementTiltInput(FVector value);
+	void MovementGyroInput(FVector value);
+	void ActionBarrelRoll();
+
+	void UpdatePlayer(float DeltaTime);
+	void UpdateCamera(float DeltaTime);
+	void SetupBarrelRollAnim(float DeltaTime);
 
 	FVector2D ViewportSize;
 	FVector DefaultTrailSize;
 	FVector LastPosition;
+	FVector Velocity;
+	float BarrelRollAnim = 0.0f;
+	float BarrelRollVel = 0.0f;
+	float BarrelRollCD = 0.0f;
 
 public:	
 	// Called every frame
