@@ -3,6 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"	
 
 #include "DebugString.h"
 
@@ -54,13 +55,14 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 
 void ALylatPlayerPawn::MovementTiltInput(FVector value)
 {
-	Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
+	//Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
 }
 
 // Called every frame
 void ALylatPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	FVector Position = GetActorLocation();
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
@@ -70,6 +72,8 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	Camera->SetRelativeLocation(CameraPosition);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(PlayerTrailLength * (Position - LastPosition).Size() / DeltaTime,1,1) * DefaultTrailSize);
 	LastPosition = Position;
+
+	ComputeCrosshairPosition();
 }
 
 // Called to bind functionality to input
@@ -82,3 +86,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementTiltInput);
 }
 
+void ALylatPlayerPawn::ComputeCrosshairPosition()
+{
+	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->PlayerMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
+}

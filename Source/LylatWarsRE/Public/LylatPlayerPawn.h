@@ -65,8 +65,20 @@ public:
 	UPROPERTY(Category = Movement, EditAnywhere)
 		float PlayerTrailLength = 1.0f;
 
+	/**Crosshair position, in the screen space*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
+		FVector2D CrosshairPosition;
+
+	/**Crosshair distance from camera (in units), keep that high*/
+	UPROPERTY(EditAnywhere, Category = HUD, meta = (ClampMin = "0"))
+		float CrosshairDistance = 20000;
+
 	// Sets default values for this pawn's properties
 	ALylatPlayerPawn();
+
+
+public :
+		void ComputeCrosshairPosition();
 
 protected:
 	// Called when the game starts or when spawned
