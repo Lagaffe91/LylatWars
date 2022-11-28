@@ -41,24 +41,69 @@ void ALylatPlayerPawn::BeginPlay()
 
 void ALylatPlayerPawn::MoveUpInput(float input)
 {
-	Velocity.Z = input * PlayerMaxSpeed;
+	Velocity.Z += input * PlayerMaxSpeed;
 }
 
 void ALylatPlayerPawn::MoveRightInput(float input)
 {
-	Velocity.Y = input * PlayerMaxSpeed;
+	Velocity.Y += input * PlayerMaxSpeed;
 }
 
 void ALylatPlayerPawn::MovementGyroInput(FVector value)
 {
-	//Debug("%.2f %.2f %.2f", value.X, value.Y, value.Z);
+	if (resetGyro)
+	{
+		defaultRotation = FQuat::MakeFromEuler(value).Inverse();
+		resetGyro = false;
+	}
+	else
+	{
+		FQuat deltaRotation = FQuat::MakeFromEuler(value) * defaultRotation;
+		float angle = FMath::RadiansToDegrees(deltaRotation.GetAngle());
+		float tmp = FMath::Abs(angle);
+		if (tmp > 0.1f && tmp < 3.0f)
+		{
+			FVector axis = deltaRotation.GetForwardVector();
+			Velocity.Y += axis.Y * PlayerMaxSpeed * 70.0f;
+			Velocity.Z += axis.Z * PlayerMaxSpeed * -70.0f;
+		}
+	}
 }
 
-void ALylatPlayerPawn::ActionBarrelRoll()
+void ALylatPlayerPawn::TouchDown(ETouchIndex::Type FingerIndex, FVector Location)
+{
+	isTouched = true;
+	touchStart = FVector2D(Location.X, Location.Y);
+	touchLast = touchStart;
+	touchCurrent = touchStart;
+}
+
+void ALylatPlayerPawn::TouchDrag(ETouchIndex::Type FingerIndex, FVector Location)
+{
+	touchCurrent = FVector2D(Location.X, Location.Y);
+}
+
+void ALylatPlayerPawn::TouchUp(ETouchIndex::Type FingerIndex, FVector Location)
+{
+	isTouched = false;
+	touchVel = FVector2D::ZeroVector;
+}
+
+void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 {
 	if (BarrelRollCD > 0.0f) return;
+	barrelReversed = reversed;
 	BarrelRollAnim = BarrelRollLength;
 	BarrelRollCD = BarrelRollCooldown;
+}
+
+void ALylatPlayerPawn::ActionDash()
+{
+}
+
+void ALylatPlayerPawn::ActionResetGyro()
+{
+	resetGyro = true;
 }
 
 void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
@@ -88,12 +133,19 @@ void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
 	length = FMath::Clamp(length, 0.001f, 50.0f);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(length, 1, 1) * DefaultTrailSize);
 	LastPosition = Position;
-
 	ComputeCrosshairPosition();
 }
 
 void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 {
+	if (isTouched)
+	{
+		touchVel = (touchCurrent - touchLast) / DeltaTime;
+		touchLast = touchCurrent;
+		if (touchVel.X > 2000.0f) ActionBarrelRoll(false);
+		else if (touchVel.X < -2000.0f) ActionBarrelRoll(true);
+	}
+	Velocity = Velocity.GetClampedToMaxSize(PlayerMaxSpeed);
 	BarrelRollCD -= DeltaTime;
 	PlayerPosition += Velocity * DeltaTime;
 	PlayerRotation.Y += Velocity.Z * DeltaTime * PlayerTurnSpeed;
@@ -104,7 +156,7 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 	}
 	else
 	{
-		BarrelRollVel += BarrelRollSpeed * DeltaTime;
+		BarrelRollVel += BarrelRollSpeed * DeltaTime * (barrelReversed ? -1.0f : 1.0f);
 		BarrelRollAnim -= DeltaTime;
 	}
 }
@@ -129,7 +181,11 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Forward", this, &ALylatPlayerPawn::MoveUpInput);
 	PlayerInputComponent->BindAxis("Right", this, &ALylatPlayerPawn::MoveRightInput);
 	PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementGyroInput);
-	PlayerInputComponent->BindAction("BarrelRoll", IE_Pressed, this, &ALylatPlayerPawn::ActionBarrelRoll);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ALylatPlayerPawn::ActionDash);
+	PlayerInputComponent->BindAction("ResetGyro", IE_Pressed, this, &ALylatPlayerPawn::ActionResetGyro);
+	PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ALylatPlayerPawn::TouchDown);
+	PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ALylatPlayerPawn::TouchDrag);
+	PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ALylatPlayerPawn::TouchUp);
 }
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()

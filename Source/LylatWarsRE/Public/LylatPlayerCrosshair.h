@@ -16,9 +16,11 @@ class LYLATWARSRE_API ULylatPlayerCrosshair : public UUserWidget
 
 		ULylatPlayerCrosshair(const FObjectInitializer& ObjectInitializer);
 		~ULylatPlayerCrosshair();
+
 public :
 		UPROPERTY(BlueprintReadOnly)
 			class ALylatPlayerPawn* PlayerPawn;
 		UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 			class UImage* CrosshairImage;
+		virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 };

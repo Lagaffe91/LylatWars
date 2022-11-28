@@ -103,7 +103,12 @@ protected:
 	void MoveUpInput(float input);
 	void MoveRightInput(float input);
 	void MovementGyroInput(FVector value);
-	void ActionBarrelRoll();
+	void TouchDown(ETouchIndex::Type FingerIndex, FVector Location);
+	void TouchDrag(ETouchIndex::Type FingerIndex, FVector Location);
+	void TouchUp(ETouchIndex::Type FingerIndex, FVector Location);
+	void ActionBarrelRoll(bool reversed);
+	void ActionDash();
+	void ActionResetGyro();
 
 	void UpdatePlayer(float DeltaTime);
 	void UpdateCamera(float DeltaTime);
@@ -116,6 +121,14 @@ protected:
 	float BarrelRollAnim = 0.0f;
 	float BarrelRollVel = 0.0f;
 	float BarrelRollCD = 0.0f;
+	bool resetGyro = true;
+	bool isTouched = false;
+	bool barrelReversed = false;
+	FVector2D touchStart;
+	FVector2D touchLast;
+	FVector2D touchCurrent;
+	FVector2D touchVel;
+	FQuat defaultRotation;
 
 public:	
 	// Called every frame
