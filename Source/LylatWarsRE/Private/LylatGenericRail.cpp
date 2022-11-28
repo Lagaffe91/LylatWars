@@ -33,7 +33,25 @@ void ALylatGenericRail::Tick(float DeltaTime)
 	else
 	{
 		railTime += DeltaTime * speedMultiplier * railSpeed;
-		this->UpdateActorTransform(railTime);
+		
+		if (ActorsOnRail.Num() > 0)
+		{
+			this->UpdateAllActorsTransform(railTime);
+		}
+
+		if (spawnedActor)
+		{
+			UpdateActorTransform(spawnedActor, railTime);
+		}
+	}
+}
+
+void ALylatGenericRail::JoinRail(TSubclassOf<AActor> Actor)
+{
+	if (Actor)
+	{
+		ActorsOnRail.Add(Actor);
+		//Actor.GetDefaultObject()->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
@@ -45,7 +63,7 @@ void ALylatGenericRail::InitRail()
 
 void ALylatGenericRail::SpawnActorOnRail()
 {
-	if (spawnedActor)
+	if (spawnedActor || !SpawnActor)
 		return;
 
 	if (ActorToSpawn)
@@ -53,7 +71,6 @@ void ALylatGenericRail::SpawnActorOnRail()
 		if (SplineComponent)
 		{
 			spawnedActor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, this->SplineComponent->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
-			UpdateActorTransform(0);	//Start of the rail
 
 			if (!spawnedActor)
 			{
@@ -74,8 +91,21 @@ void ALylatGenericRail::SpawnActorOnRail()
 	}
 }
 
-void ALylatGenericRail::UpdateActorTransform(const float& Time)
+void ALylatGenericRail::UpdateActorTransform(TSubclassOf<AActor> Actor, const float& Time)
 {
-	if (this->spawnedActor && this->SplineComponent)
-		this->spawnedActor->SetActorTransform(this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World));
+	UpdateActorTransform(Actor.GetDefaultObject(), Time);
+}
+
+void ALylatGenericRail::UpdateActorTransform(AActor* Actor, const float& Time)
+{
+	if (Actor && this->SplineComponent)
+		Actor->SetActorTransform(this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World));
+}
+
+void ALylatGenericRail::UpdateAllActorsTransform(const float& Time)
+{
+	for (TSubclassOf<AActor> Actor : ActorsOnRail)
+	{
+		UpdateActorTransform(Actor, Time);
+	}
 }
