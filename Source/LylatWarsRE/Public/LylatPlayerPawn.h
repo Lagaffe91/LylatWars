@@ -9,7 +9,7 @@
 #include "LylatEntity.h"
 #include "LylatPlayerPawn.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
 {
 	GENERATED_BODY()
@@ -112,7 +112,11 @@ protected:
 	void ActionShoot();
 	void ActionStopShoot();
 	void ActionBarrelRoll(bool reversed);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionDash();
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionResetGyro();
 
 	void UpdateShooting(float DeltaTime);
@@ -136,6 +140,7 @@ protected:
 	FVector2D touchLast;
 	FVector2D touchCurrent;
 	FVector2D touchVel;
+	FVector oldDir;
 	FQuat defaultRotation;
 
 public:	
