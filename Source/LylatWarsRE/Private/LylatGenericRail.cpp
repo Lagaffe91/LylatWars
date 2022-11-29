@@ -2,6 +2,7 @@
 
 #include "LylatGenericRail.h"
 
+#include "DebugString.h"
 #include "Components/SplineComponent.h"
 
 // Sets default values
@@ -18,13 +19,19 @@ void ALylatGenericRail::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	this->SpawnActorOnRail();
+	this->SpawnActorsOnRail();
+	this->UpdateAllActorsTransform(0);
 }
 
 // Called every frame
 void ALylatGenericRail::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (RailIsOver || ActorsOnRail.Num() == 0)	//end of rail/No actors to update
+	{
+		return;
+	}
 
 	if (railStartDelay > 0)
 	{
@@ -34,25 +41,57 @@ void ALylatGenericRail::Tick(float DeltaTime)
 	{
 		railTime += DeltaTime * speedMultiplier * railSpeed;
 		
-		if (ActorsOnRail.Num() > 0)
+		if(RailShouldLoop())	//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
 		{
-			this->UpdateAllActorsTransform(railTime);
+			if(SplineComponent->IsClosedLoop())
+			{ 
+				RailLoop();
+			}
+			else
+			{
+				this->RailEnded_Implementation();
+				this->RailEnded();
+			}
 		}
 
-		if (spawnedActor)
-		{
-			UpdateActorTransform(spawnedActor, railTime);
-		}
+		this->UpdateAllActorsTransform(railTime);
 	}
 }
 
-void ALylatGenericRail::JoinRail(TSubclassOf<AActor> Actor)
+void ALylatGenericRail::JoinRail(TSubclassOf<ALylatEntity> Actor)
 {
 	if (Actor)
 	{
-		ActorsOnRail.Add(Actor);
-		//Actor.GetDefaultObject()->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+		ActorsOnRail.Add(Actor.GetDefaultObject());
+
+		ComputeEnityMeshTransform(Actor.GetDefaultObject());
 	}
+}
+
+void ALylatGenericRail::JoinRailArray(TArray<ALylatEntity*> Actors)
+{
+	this->ActorsOnRail += Actors;
+	
+	//Compute new mesh location
+	for (ALylatEntity* Entity : Actors)
+	{
+		ComputeEnityMeshTransform(Entity);
+	}
+}
+
+void ALylatGenericRail::RailEnded_Implementation()
+{
+	this->RailIsOver = true;
+}
+
+bool ALylatGenericRail::RailShouldLoop()
+{
+	return railTime > SplineComponent->GetSplineLength();
+}
+
+void ALylatGenericRail::RailLoop()
+{
+	railTime /= SplineComponent->GetSplineLength();
 }
 
 void ALylatGenericRail::InitRail()
@@ -61,50 +100,73 @@ void ALylatGenericRail::InitRail()
 	RootComponent = SplineComponent;
 }
 
-void ALylatGenericRail::SpawnActorOnRail()
+void ALylatGenericRail::ComputeEnityMeshTransform(ALylatEntity* Entity)
 {
-	if (spawnedActor || !SpawnActor)
+	if(Entity)
+	{ 
+		//FVector meshPosition = Entity->EntityMesh->GetComponentLocation();
+		FTransform meshTransform = Entity->EntityMesh->GetComponentTransform();
+
+		this->UpdateActorTransform(Entity, railTime);
+		
+		Entity->EntityMesh->SetWorldTransform(meshTransform);
+	}
+	else
+	{
+		DebugError("ComputeEnityMeshTransform : Entity is null", 0);
+	}
+}
+
+void ALylatGenericRail::SpawnActorsOnRail()
+{
+	if (!SpawnActor)
 		return;
 
-	if (ActorToSpawn)
+	if (SplineComponent)
 	{
-		if (SplineComponent)
+		for (TSubclassOf<ALylatEntity> actor : ActorsToSpawn)
 		{
-			spawnedActor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, this->SplineComponent->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
-
-			if (!spawnedActor)
+			ALylatEntity*actorPtr = GetWorld()->SpawnActor<ALylatEntity>(actor, this->SplineComponent->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
+			
+			if (!actorPtr)
 			{
 				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Actor not correctly spawned ()"));
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Actor not correctly spawned"));
 			}
-		}
-		else
-		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Spline component is wrong (not created ?)"));
+			else
+			{
+				ActorsOnRail.Add(actorPtr);
+			}
 		}
 	}
 	else
 	{
 		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Actor to spawn not set"));
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Spline component is wrong (not created ?)"));
 	}
 }
 
-void ALylatGenericRail::UpdateActorTransform(TSubclassOf<AActor> Actor, const float& Time)
+void ALylatGenericRail::UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time)
 {
 	UpdateActorTransform(Actor.GetDefaultObject(), Time);
 }
 
-void ALylatGenericRail::UpdateActorTransform(AActor* Actor, const float& Time)
+void ALylatGenericRail::UpdateActorTransform(ALylatEntity* Actor, const float& Time)
 {
 	if (Actor && this->SplineComponent)
-		Actor->SetActorTransform(this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World));
+	{
+		FTransform NewTranform = this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World);
+		Actor->SetActorTransform(NewTranform);
+	}
+	else
+	{
+		DebugError("Failed to update transform", 0);
+	}
 }
 
 void ALylatGenericRail::UpdateAllActorsTransform(const float& Time)
 {
-	for (TSubclassOf<AActor> Actor : ActorsOnRail)
+	for (ALylatEntity* Actor : ActorsOnRail)
 	{
 		UpdateActorTransform(Actor, Time);
 	}

@@ -4,53 +4,58 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "LylatNormalBullet.h"
+
+#include "LylatEntity.h"
 #include "LylatPlayerPawn.generated.h"
 
+<<<<<<< HEAD
 UCLASS(Blueprintable)
 class LYLATWARSRE_API ALylatPlayerPawn : public APawn
+=======
+UCLASS()
+class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
+>>>>>>> 2b934cc4084c9dda4f1152fd3f8b4cb892ca71c4
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly)
-		class UStaticMeshComponent* PlayerMesh;
-
-	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(Category = "Lylat Player", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* PlayerTrailMesh;
 
-	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(Category = "Lylat Player|Camera", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UCameraComponent* Camera;
 
 	/** Current camera relative position */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Camera")
 		FVector CameraPosition = FVector(-200, 0, 0);
 
 	/** Current camera relative rotation */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Camera")
 		FVector CameraRotation = FVector(0, 0, 0);
 
 	/** Distance from the camera and the player */
-	UPROPERTY(EditAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Camera")
 		float CameraDistance = -200.0f;
 
 	/** The ration between the center of the screen and the player position when the player moves */
-	UPROPERTY(EditAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Camera")
 		float CameraFollowRatio = 0.75f;
 
 	/** Current player relative position */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement")
 		FVector PlayerPosition = FVector(0, 0, 0);
 
 	/** Current player relative rotation */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement")
 		FVector PlayerRotation = FVector(0, 0, 0);
 
 	/** Player movement space size */
-	UPROPERTY(EditAnywhere, Category = Movement)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		FVector2D PlayerPlaneSize = FVector2D(100, 160);
 
 	/** How quickly player will move on the view plane*/
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		float PlayerMaxSpeed = 2.0f;
 
 	/** How quickly player can steer */
@@ -58,35 +63,38 @@ public:
 		float PlayerTurnSpeed = 2.0f;
 
 	/** How quickly player will go back to default position */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		float PlayerUnturnSpeed = 10.0f;
 
 	/** Player trail length factor, depends on speed */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		float PlayerTrailLength = 1.0f;
 
 	/** Length of the Barrel Roll animation (in seconds) */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		float BarrelRollLength = 1.0f;
 
 	/** Multiplier for the Barrel Roll animation speed */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
 		float BarrelRollSpeed = 1.0f;
 
 	/** Multiplier for the Barrel Roll animation friction */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
 		float BarrelRollFriction = 2.0f;
 
 	/** Cooldown for the Barrel Roll animation */
-	UPROPERTY(Category = Movement, EditAnywhere)
+	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
 		float BarrelRollCooldown = 3.0f;
+	/** Cooldown for the shooting rate */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float ShootCooldown = 0.2f;
 
 	/**Crosshair position, in the screen space*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|HUD")
 		FVector2D CrosshairPosition;
 
 	/**Crosshair distance from camera (in units), keep that high*/
-	UPROPERTY(EditAnywhere, Category = HUD, meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, Category = "Lylat Player|HUD", meta = (ClampMin = "0"))
 		float CrosshairDistance = 20000;
 
 	// Sets default values for this pawn's properties
@@ -106,6 +114,8 @@ protected:
 	void TouchDown(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchDrag(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchUp(ETouchIndex::Type FingerIndex, FVector Location);
+	void ActionShoot();
+	void ActionStopShoot();
 	void ActionBarrelRoll(bool reversed);
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -114,6 +124,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionResetGyro();
 
+	void UpdateShooting(float DeltaTime);
 	void UpdatePlayer(float DeltaTime);
 	void UpdateCamera(float DeltaTime);
 	void SetupBarrelRollAnim(float DeltaTime);
@@ -125,8 +136,10 @@ protected:
 	float BarrelRollAnim = 0.0f;
 	float BarrelRollVel = 0.0f;
 	float BarrelRollCD = 0.0f;
+	float ShootCD = 0.0f;
 	bool resetGyro = true;
 	bool isTouched = false;
+	bool isShooting = false;
 	bool barrelReversed = false;
 	FVector2D touchStart;
 	FVector2D touchLast;

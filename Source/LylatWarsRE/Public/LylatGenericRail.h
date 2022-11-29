@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LylatEntity.h"
 
 #include "LylatGenericRail.generated.h"
 
@@ -22,13 +23,10 @@ public:
 
 	/*Rail will spawn and act on this actor*/
 	UPROPERTY(EditAnywhere, Category = "Generic Rail")
-		TSubclassOf<AActor> ActorToSpawn;
+		TArray<TSubclassOf<ALylatEntity>> ActorsToSpawn;
 
 	UPROPERTY(BlueprintReadOnly)
-		AActor* spawnedActor; //TODO : Better typing ? AActor kinda suck
-
-	UPROPERTY(BlueprintReadOnly)
-		TArray<TSubclassOf<AActor>> ActorsOnRail;
+		TArray<ALylatEntity*> ActorsOnRail;
 
 	/*Rail will start to drag the actor after this delay*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Generic Rail|Parameters", meta = (ClampMin = "0"))
@@ -45,29 +43,44 @@ public:
 	/**If true, will spawn ActorToSpawn on startup*/
 	UPROPERTY(EditAnywhere, Category = "Generic Rail|Parameters")
 		bool SpawnActor = true;
-
+	/**True if the rail is not active*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
+		bool RailIsOver = false;
 protected :
 	/*Time ealapsed*/
-	UPROPERTY(BlueprintReadOnly, Category = "Generic Rail")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Generic Rail")
 		float railTime = 0; //Bad idea to put this as UPROPERTY()
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void SpawnActorOnRail();
+	virtual void SpawnActorsOnRail();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void JoinRail(TSubclassOf<AActor> Actor);
+		void JoinRail(TSubclassOf<ALylatEntity> Actor);
+	UFUNCTION(BlueprintCallable)
+		void JoinRailArray(TArray<ALylatEntity*> Actors);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
+		void RailEnded();
+	void RailEnded_Implementation();
+
+	UFUNCTION(BlueprintCallable)
+		bool RailShouldLoop();
+
+	UFUNCTION(BlueprintCallable)
+		void RailLoop();
 
 private :
 	void InitRail();
 	
-	void UpdateActorTransform(TSubclassOf<AActor> Actor, const float& Time);
-	void UpdateActorTransform(AActor *Actor, const float& Time);
+	void ComputeEnityMeshTransform(ALylatEntity* Entity);
+
+	void UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time);
+	void UpdateActorTransform(ALylatEntity*Actor, const float& Time);
 	void UpdateAllActorsTransform(const float& Time);
 };
