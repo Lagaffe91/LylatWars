@@ -22,6 +22,8 @@ ALylatEntity::ALylatEntity()
 	EntityMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EntityMesh"));
 	EntityMesh->SetupAttachment(RootComponent);
 
+	BulletSpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("BulletSpawn"));
+	BulletSpawnPosition->SetupAttachment(EntityMesh);
 	EntityHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Entity Hitbox"));
 	EntityHitbox->SetupAttachment(EntityMesh);
 	EntityHitbox->SetGenerateOverlapEvents(true);

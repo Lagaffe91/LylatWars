@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Components/ArrowComponent.h"
 #include "LylatEntity.generated.h"
 
 UCLASS()
@@ -30,9 +31,12 @@ public:
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UStaticMeshComponent* EntityMesh;
 
-	/*UBoxComponent representing the hitbox of the entity**/
+	/**UBoxComponent representing the hitbox of the entity**/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* EntityHitbox;
+	/**Location of spawning bullets **/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		class UArrowComponent* BulletSpawnPosition;
 
 	/**Max life of the entity*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))
@@ -42,5 +46,6 @@ public:
 		int EntityLife = 0;
 
 public:
+	UFUNCTION()
 	virtual void HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
