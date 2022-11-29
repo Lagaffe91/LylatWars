@@ -99,6 +99,7 @@ void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 
 void ALylatPlayerPawn::ActionDash()
 {
+	Debug("Dash",0);
 }
 
 void ALylatPlayerPawn::ActionResetGyro()
@@ -119,7 +120,7 @@ void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 	float rotationX = PlayerRotation.X;
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerRotation.X = rotationX;
-	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
+	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation + FVector(PlayerRotation.Z * 0.5f, PlayerPosition.Z / PlayerPlaneSize.Y * 40, PlayerPosition.Y / PlayerPlaneSize.X * 80)));
 }
 
 void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
@@ -133,7 +134,6 @@ void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
 	length = FMath::Clamp(length, 0.001f, 50.0f);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(length, 1, 1) * DefaultTrailSize);
 	LastPosition = Position;
-	ComputeCrosshairPosition();
 }
 
 void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
@@ -169,6 +169,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	{
 		ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	}
+	ComputeCrosshairPosition();
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 }
@@ -190,5 +191,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
-	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->PlayerMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
+	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + this->GetActorLocation() + this->PlayerPosition - this->CameraPosition, CrosshairPosition);
+	CrosshairPosition = FVector2D(FMath::Clamp(CrosshairPosition.X, -50.0f, ViewportSize.X + 50.0f), FMath::Clamp(CrosshairPosition.Y, -50.0f, ViewportSize.Y + 50.0f));
+	oldDir = this->PlayerMesh->GetForwardVector();
 }

@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "LylatPlayerPawn.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class LYLATWARSRE_API ALylatPlayerPawn : public APawn
 {
 	GENERATED_BODY()
@@ -107,7 +107,11 @@ protected:
 	void TouchDrag(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchUp(ETouchIndex::Type FingerIndex, FVector Location);
 	void ActionBarrelRoll(bool reversed);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionDash();
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionResetGyro();
 
 	void UpdatePlayer(float DeltaTime);
@@ -128,6 +132,7 @@ protected:
 	FVector2D touchLast;
 	FVector2D touchCurrent;
 	FVector2D touchVel;
+	FVector oldDir;
 	FQuat defaultRotation;
 
 public:	
