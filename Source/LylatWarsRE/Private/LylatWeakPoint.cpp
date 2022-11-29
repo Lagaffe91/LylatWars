@@ -12,7 +12,7 @@ ALylatWeakPoint::ALylatWeakPoint()
 	USceneComponent* WeakPoint = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
 
-	PointMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BossMesh"));
+	PointMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeakMesh"));
 	PointMesh->SetRelativeLocationAndRotation(PointPosition, FQuat::MakeFromEuler(PointRotation));
 	PointMesh->SetupAttachment(WeakPoint);
 
