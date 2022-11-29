@@ -100,7 +100,7 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
-	FVector Location = EntityMesh->GetRelativeLocation() + GetRootComponent()->GetRelativeLocation();
+	FVector Location = EntityMesh->GetComponentLocation();
 	FRotator Rotation = PlayerRotation.Rotation();
 	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
 	if (Projectile)
@@ -217,7 +217,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
-	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + this->GetActorLocation() + this->PlayerPosition - this->CameraPosition, CrosshairPosition);
+	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + EntityMesh->GetComponentLocation(), CrosshairPosition);
 	CrosshairPosition = FVector2D(FMath::Clamp(CrosshairPosition.X, -50.0f, ViewportSize.X + 50.0f), FMath::Clamp(CrosshairPosition.Y, -50.0f, ViewportSize.Y + 50.0f));
 	oldDir = this->EntityMesh->GetForwardVector();
 }
