@@ -16,6 +16,11 @@ public:
 	// Sets default values for this actor's properties
 	ALylatEnemy();
 
+public :
+	/**If false, will be completely harmless*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lylat Enemy|Parameters")
+		bool IsActivated = true;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -24,7 +29,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Lylat Enemy|Events")
+		void Activate();
+
+	/**Called once per tick if enemy is activated*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Enemy|Mouvement")
-		void Mouvement(float DeltaTime); //Can define mouvement in bleuprint, Use Mouvement_Implementation otherwise
-	virtual void Mouvement_Implementation(float DeltaTime) {};
+		void Behaviour(float DeltaTime);
+	virtual void Behaviour_Implementation(float DeltaTime) {};
+
+	/**Shoot a bullet following it's implementation*/
+	UFUNCTION(BlueprintCallable, Category = "Lylat Enemy|Events")
+		virtual void ShootBullet() {};
 };
