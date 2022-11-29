@@ -26,7 +26,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(Category = "Lylat Enity", VisibleDefaultsOnly, BlueprintReadOnly)
+	/**Mesh component the look of the entity*/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UStaticMeshComponent* EntityMesh;
 
+	/*UBoxComponent representing the hitbox of the entity**/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent* EntityHitbox;
+
+	/**Max life of the entity*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))
+		int EntityMaxLife = 1;
+	/**Current life of the entity*/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		int EntityLife = 0;
+
+public:
+	virtual void HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
