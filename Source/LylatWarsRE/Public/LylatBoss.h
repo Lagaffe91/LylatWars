@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
+#include "LylatNormalBullet.h"
 #include "LylatWeakPoint.h"
+
 #include "LylatBoss.generated.h"
+
 
 UCLASS()
 class LYLATWARSRE_API ALylatBoss : public APawn
@@ -50,6 +53,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		TArray<ALylatWeakPoint*> BossWeakPoints;
+
+private:
+	float BulletCooldown;
+
 
 
 };
