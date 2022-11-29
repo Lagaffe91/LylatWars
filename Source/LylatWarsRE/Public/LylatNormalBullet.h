@@ -22,7 +22,7 @@ public:
 	USphereComponent             *CollisionComponent;
 public:	
 	// Sets default values for this actor's properties
-	ALylatNormalBullet();
+	ALylatNormalBullet(const FObjectInitializer& ObjectInitializer);
 
 	void FireInDirection(const FVector& ShootDirection);
 protected:

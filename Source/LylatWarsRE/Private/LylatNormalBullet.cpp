@@ -4,7 +4,8 @@
 #include "LylatNormalBullet.h"
 
 // Sets default values
-ALylatNormalBullet::ALylatNormalBullet()
+ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,9 +15,10 @@ ALylatNormalBullet::ALylatNormalBullet()
 	}
 
 	BulletMovement     = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	SphereMesh         = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	SphereMesh         = CreateDefaultSubobject<UStaticMeshComponent>        (TEXT("SphereMesh"));
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>            (TEXT("CollisionComponent"));
 
+	//TODO: change this value to be reasonable
 	CollisionComponent->InitSphereRadius(15.0f);
 
 	BulletMovement->SetUpdatedComponent(CollisionComponent);
