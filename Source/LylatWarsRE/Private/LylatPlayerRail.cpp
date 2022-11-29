@@ -11,7 +11,7 @@ void ALylatPlayerRail::BeginPlay()
 {
 	if (smartPossess)
 	{
-		this->ActorsOnRail.Add(GetWorld()->GetFirstPlayerController()->GetPawn());
+		this->ActorsOnRail.Add((ALylatEntity*)GetWorld()->GetFirstPlayerController()->GetPawn());
 	}
 	else
 	{
