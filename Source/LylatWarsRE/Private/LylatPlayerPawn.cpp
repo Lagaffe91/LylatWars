@@ -28,6 +28,7 @@ ALylatPlayerPawn::ALylatPlayerPawn()
 	Camera->SetRelativeLocationAndRotation(CameraPosition, FQuat::MakeFromEuler(CameraRotation));
 	Camera->SetupAttachment(base);
 	Camera->bUsePawnControlRotation = false;
+	isShooting = false;
 }
 
 // Called when the game starts or when spawned
@@ -89,6 +90,33 @@ void ALylatPlayerPawn::TouchUp(ETouchIndex::Type FingerIndex, FVector Location)
 	touchVel = FVector2D::ZeroVector;
 }
 
+void ALylatPlayerPawn::ActionStopShoot()
+{
+	isShooting = false;
+}
+
+void ALylatPlayerPawn::ActionShoot()
+{
+	isShooting = true;
+}
+void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
+{
+	if (ShootCD > 0.0f || !isShooting) return;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	FVector Location = PlayerMesh->GetRelativeLocation() + GetRootComponent()->GetRelativeLocation();
+	FRotator Rotation = PlayerRotation.Rotation();
+	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+	if (Projectile)
+	{
+		// Set the projectile's initial trajectory.
+		FVector LaunchDirection = PlayerMesh->GetForwardVector();
+		Projectile->FireInDirection(LaunchDirection);
+	}
+	ShootCD = ShootCooldown;
+}
 void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 {
 	if (BarrelRollCD > 0.0f) return;
@@ -147,6 +175,7 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 	}
 	Velocity = Velocity.GetClampedToMaxSize(PlayerMaxSpeed);
 	BarrelRollCD -= DeltaTime;
+	ShootCD -= DeltaTime;
 	PlayerPosition += Velocity * DeltaTime;
 	PlayerRotation.Y += Velocity.Z * DeltaTime * PlayerTurnSpeed;
 	PlayerRotation.Z += Velocity.Y * DeltaTime * PlayerTurnSpeed;
@@ -169,6 +198,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	{
 		ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	}
+	UpdateShooting(DeltaTime);
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 }
@@ -182,6 +212,8 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Right", this, &ALylatPlayerPawn::MoveRightInput);
 	PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementGyroInput);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ALylatPlayerPawn::ActionDash);
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ALylatPlayerPawn::ActionShoot);
+	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &ALylatPlayerPawn::ActionStopShoot);
 	PlayerInputComponent->BindAction("ResetGyro", IE_Pressed, this, &ALylatPlayerPawn::ActionResetGyro);
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ALylatPlayerPawn::TouchDown);
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ALylatPlayerPawn::TouchDrag);

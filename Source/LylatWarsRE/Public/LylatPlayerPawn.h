@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "LylatNormalBullet.h"
+
 #include "LylatPlayerPawn.generated.h"
 
 UCLASS()
@@ -80,6 +82,9 @@ public:
 	/** Cooldown for the Barrel Roll animation */
 	UPROPERTY(Category = Movement, EditAnywhere)
 		float BarrelRollCooldown = 3.0f;
+	/** Cooldown for the shooting rate */
+	UPROPERTY(Category = Movement, EditAnywhere)
+		float ShootCooldown = 0.2f;
 
 	/**Crosshair position, in the screen space*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
@@ -106,10 +111,13 @@ protected:
 	void TouchDown(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchDrag(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchUp(ETouchIndex::Type FingerIndex, FVector Location);
+	void ActionShoot();
+	void ActionStopShoot();
 	void ActionBarrelRoll(bool reversed);
 	void ActionDash();
 	void ActionResetGyro();
 
+	void UpdateShooting(float DeltaTime);
 	void UpdatePlayer(float DeltaTime);
 	void UpdateCamera(float DeltaTime);
 	void SetupBarrelRollAnim(float DeltaTime);
@@ -121,8 +129,10 @@ protected:
 	float BarrelRollAnim = 0.0f;
 	float BarrelRollVel = 0.0f;
 	float BarrelRollCD = 0.0f;
+	float ShootCD = 0.0f;
 	bool resetGyro = true;
 	bool isTouched = false;
+	bool isShooting = false;
 	bool barrelReversed = false;
 	FVector2D touchStart;
 	FVector2D touchLast;

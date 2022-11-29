@@ -27,6 +27,7 @@ ALylatNormalBullet::ALylatNormalBullet()
 	BulletMovement->Bounciness = 0.3f;
 	BulletMovement->ProjectileGravityScale = 0.0f;
 	RootComponent = CollisionComponent;
+	InitialLifeSpan = 3.0f;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
