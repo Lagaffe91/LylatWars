@@ -65,21 +65,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
 		float PlayerTrailLength = 1.0f;
 
-	/** Length of the Barrel Roll animation (in seconds) */
-	UPROPERTY(EditAnywhere, Category = "Lylat Player|Mouvement")
-		float BarrelRollLength = 1.0f;
-
-	/** Multiplier for the Barrel Roll animation speed */
+	/** Speed of the Barrel Roll animation in seconds */
 	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
-		float BarrelRollSpeed = 1.0f;
-
-	/** Multiplier for the Barrel Roll animation friction */
-	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
-		float BarrelRollFriction = 2.0f;
+		float BarrelRollSpeed = 0.5f;
 
 	/** Cooldown for the Barrel Roll animation */
 	UPROPERTY(Category = "Lylat Player|Mouvement", EditAnywhere)
-		float BarrelRollCooldown = 3.0f;
+		float BarrelRollCooldown = 0.0f;
+
 	/** Cooldown for the shooting rate */
 	UPROPERTY(Category = Movement, EditAnywhere)
 		float ShootCooldown = 0.2f;
@@ -129,7 +122,6 @@ protected:
 	FVector LastPosition;
 	FVector Velocity;
 	float BarrelRollAnim = 0.0f;
-	float BarrelRollVel = 0.0f;
 	float BarrelRollCD = 0.0f;
 	float ShootCD = 0.0f;
 	bool resetGyro = true;

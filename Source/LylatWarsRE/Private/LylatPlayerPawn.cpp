@@ -32,6 +32,7 @@ void ALylatPlayerPawn::BeginPlay()
 	ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	DefaultTrailSize = PlayerTrailMesh->GetRelativeScale3D();
 	LastPosition = GetActorLocation();
+	resetGyro = true;
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -95,7 +96,7 @@ void ALylatPlayerPawn::ActionShoot()
 }
 void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 {
-	if (ShootCD > 0.0f || !isShooting) return;
+	if (ShootCD > 0.0f || (!isShooting && !isTouched)) return;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
@@ -113,9 +114,9 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 }
 void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 {
-	if (BarrelRollCD > 0.0f) return;
+	if (BarrelRollCD > 0.0f || BarrelRollAnim > 0.0f) return;
 	barrelReversed = reversed;
-	BarrelRollAnim = BarrelRollLength;
+	BarrelRollAnim = BarrelRollSpeed;
 	BarrelRollCD = BarrelRollCooldown;
 }
 
@@ -132,10 +133,6 @@ void ALylatPlayerPawn::ActionResetGyro()
 void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 {
 	SetupBarrelRollAnim(DeltaTime);
-	PlayerRotation.X += BarrelRollVel * DeltaTime;
-	PlayerRotation.X = FMath::Fmod(PlayerRotation.X, 360.0f);
-	if (PlayerRotation.X < -180.0f) PlayerRotation.X += 360.0f;
-	if (PlayerRotation.X > 180.0f) PlayerRotation.X -= 360.0f;
 	Velocity = FVector::ZeroVector;
 	PlayerPosition.Y = FMath::Clamp(PlayerPosition.Y, -PlayerPlaneSize.X / 2, PlayerPlaneSize.X / 2);
 	PlayerPosition.Z = FMath::Clamp(PlayerPosition.Z, -PlayerPlaneSize.Y / 2, PlayerPlaneSize.Y / 2);
@@ -153,7 +150,7 @@ void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
 	Camera->SetRelativeLocation(CameraPosition);
 	FVector Position = GetActorLocation();
 	float length = PlayerTrailLength * (Position - LastPosition).Size() / DeltaTime;
-	length = FMath::Clamp(length, 0.001f, 50.0f);
+	length = FMath::Clamp(length, 0.5f, 5.0f);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(length, 1, 1) * DefaultTrailSize);
 	LastPosition = Position;
 }
@@ -175,11 +172,14 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 	PlayerRotation.Z += Velocity.Y * DeltaTime * PlayerTurnSpeed;
 	if (BarrelRollAnim <= 0.0f)
 	{
-		BarrelRollVel = BarrelRollVel * (1 - BarrelRollFriction * DeltaTime) + FMath::FindDeltaAngleDegrees(PlayerRotation.X, 0.0f) * DeltaTime * BarrelRollSpeed * 0.1f;
+		PlayerRotation.X = 0;
 	}
 	else
 	{
-		BarrelRollVel += BarrelRollSpeed * DeltaTime * (barrelReversed ? -1.0f : 1.0f);
+		PlayerRotation.X = FMath::Lerp(0.0f, barrelReversed ? 360.0f : -360.0f, BarrelRollAnim / BarrelRollSpeed);
+		PlayerRotation.X = FMath::Fmod(PlayerRotation.X, 360.0f);
+		if (PlayerRotation.X < -180.0f) PlayerRotation.X += 360.0f;
+		if (PlayerRotation.X > 180.0f) PlayerRotation.X -= 360.0f;
 		BarrelRollAnim -= DeltaTime;
 	}
 }

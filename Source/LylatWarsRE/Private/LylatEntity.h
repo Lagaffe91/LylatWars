@@ -26,7 +26,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(Category = "Lylat Enity", VisibleDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(Category = "Lylat Entity", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* EntityMesh;
 
 };
