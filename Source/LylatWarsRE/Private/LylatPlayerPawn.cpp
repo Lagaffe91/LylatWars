@@ -142,11 +142,7 @@ void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 	float rotationX = PlayerRotation.X;
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerRotation.X = rotationX;
-<<<<<<< HEAD
-	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation + FVector(PlayerRotation.Z * 0.5f, PlayerPosition.Z / PlayerPlaneSize.Y * 40, PlayerPosition.Y / PlayerPlaneSize.X * 80)));
-=======
-	EntityMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
->>>>>>> 2b934cc4084c9dda4f1152fd3f8b4cb892ca71c4
+	EntityMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation + FVector(PlayerRotation.Z * 0.5f, PlayerPosition.Z / PlayerPlaneSize.Y * 40, PlayerPosition.Y / PlayerPlaneSize.X * 80)));
 }
 
 void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
@@ -196,11 +192,8 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	{
 		ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	}
-<<<<<<< HEAD
 	ComputeCrosshairPosition();
-=======
 	UpdateShooting(DeltaTime);
->>>>>>> 2b934cc4084c9dda4f1152fd3f8b4cb892ca71c4
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 }
@@ -224,11 +217,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
-<<<<<<< HEAD
 	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + this->GetActorLocation() + this->PlayerPosition - this->CameraPosition, CrosshairPosition);
 	CrosshairPosition = FVector2D(FMath::Clamp(CrosshairPosition.X, -50.0f, ViewportSize.X + 50.0f), FMath::Clamp(CrosshairPosition.Y, -50.0f, ViewportSize.Y + 50.0f));
-	oldDir = this->PlayerMesh->GetForwardVector();
-=======
-	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->EntityMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
->>>>>>> 2b934cc4084c9dda4f1152fd3f8b4cb892ca71c4
+	oldDir = this->EntityMesh->GetForwardVector();
 }

@@ -9,13 +9,8 @@
 #include "LylatEntity.h"
 #include "LylatPlayerPawn.generated.h"
 
-<<<<<<< HEAD
 UCLASS(Blueprintable)
-class LYLATWARSRE_API ALylatPlayerPawn : public APawn
-=======
-UCLASS()
 class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
->>>>>>> 2b934cc4084c9dda4f1152fd3f8b4cb892ca71c4
 {
 	GENERATED_BODY()
 
