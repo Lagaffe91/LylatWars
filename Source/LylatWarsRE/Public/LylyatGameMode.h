@@ -14,4 +14,10 @@ class LYLATWARSRE_API ALylyatGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+private:
+	ALylyatGameMode(const FObjectInitializer& ObjectInitializer);
+
+	int Score = 0;
+public:
+	void AddScore(int value);
 };
