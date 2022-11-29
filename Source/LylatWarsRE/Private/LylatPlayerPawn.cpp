@@ -100,14 +100,13 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
-	FVector Location = PlayerMesh->GetRelativeLocation() + GetRootComponent()->GetRelativeLocation();
-	FVector Location = PlayerMesh->GetComponentLocation();
+	FVector Location = EntityMesh->GetRelativeLocation() + GetRootComponent()->GetRelativeLocation();
 	FRotator Rotation = PlayerRotation.Rotation();
 	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
 	if (Projectile)
 	{
 		// Set the projectile's initial trajectory.
-		FVector LaunchDirection = PlayerMesh->GetForwardVector();
+		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection);
 	}
 	ShootCD = ShootCooldown;
