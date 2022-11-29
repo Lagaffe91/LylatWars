@@ -14,10 +14,8 @@ ALylatEntity::ALylatEntity()
 
 	EntityLife = EntityMaxLife;
 
-	USceneComponent* base = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-
 	EntityMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EntityMesh"));
-	EntityMesh->SetupAttachment(base);
+	EntityMesh->SetupAttachment(RootComponent);
 
 	EntityHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Entity Hitbox"));
 	EntityHitbox->SetupAttachment(EntityMesh);

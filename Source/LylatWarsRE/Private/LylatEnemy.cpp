@@ -22,5 +22,15 @@ void ALylatEnemy::BeginPlay()
 void ALylatEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (this->IsActivated)
+	{
+		this->Behaviour(DeltaTime);
+	}
+}
+
+void ALylatEnemy::Activate()
+{
+	this->IsActivated = true;
 }
 
