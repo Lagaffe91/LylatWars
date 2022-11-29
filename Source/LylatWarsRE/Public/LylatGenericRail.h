@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LylatEntity.h"
 
 #include "LylatGenericRail.generated.h"
 
@@ -22,10 +23,10 @@ public:
 
 	/*Rail will spawn and act on this actor*/
 	UPROPERTY(EditAnywhere, Category = "Generic Rail")
-		TArray<TSubclassOf<AActor>> ActorsToSpawn;
+		TArray<TSubclassOf<ALylatEntity>> ActorsToSpawn;
 
 	UPROPERTY(BlueprintReadOnly)
-		TArray<AActor*> ActorsOnRail;
+		TArray<ALylatEntity*> ActorsOnRail;
 
 	/*Rail will start to drag the actor after this delay*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Generic Rail|Parameters", meta = (ClampMin = "0"))
@@ -61,9 +62,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-		void JoinRail(TSubclassOf<AActor> Actor);
+		void JoinRail(TSubclassOf<ALylatEntity> Actor);
 	UFUNCTION(BlueprintCallable)
-		void JoinRailArray(TArray<AActor*> Actors);
+		void JoinRailArray(TArray<ALylatEntity*> Actors);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
 		void RailEnded();
 	void RailEnded_Implementation();
@@ -77,7 +78,9 @@ public:
 private :
 	void InitRail();
 	
-	void UpdateActorTransform(TSubclassOf<AActor> Actor, const float& Time);
-	void UpdateActorTransform(AActor *Actor, const float& Time);
+	void ComputeEnityMeshTransform(ALylatEntity* Entity);
+
+	void UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time);
+	void UpdateActorTransform(ALylatEntity*Actor, const float& Time);
 	void UpdateAllActorsTransform(const float& Time);
 };

@@ -14,19 +14,13 @@ ALylatPlayerPawn::ALylatPlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	USceneComponent* base = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-
-	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerShipMesh"));
-	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
-	PlayerMesh->SetupAttachment(base);
-
 	PlayerTrailMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerShipTrailMesh"));
-	PlayerTrailMesh->SetupAttachment(PlayerMesh);
+	PlayerTrailMesh->SetupAttachment(EntityMesh);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraPosition.X = CameraDistance;
 	Camera->SetRelativeLocationAndRotation(CameraPosition, FQuat::MakeFromEuler(CameraRotation));
-	Camera->SetupAttachment(base);
+	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = false;
 	isShooting = false;
 }
@@ -106,13 +100,13 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
-	FVector Location = PlayerMesh->GetComponentLocation();
+	FVector Location = EntityMesh->GetComponentLocation();
 	FRotator Rotation = PlayerRotation.Rotation();
 	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
 	if (Projectile)
 	{
 		// Set the projectile's initial trajectory.
-		FVector LaunchDirection = PlayerMesh->GetForwardVector();
+		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection);
 	}
 	ShootCD = ShootCooldown;
@@ -147,7 +141,7 @@ void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 	float rotationX = PlayerRotation.X;
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerRotation.X = rotationX;
-	PlayerMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
+	EntityMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation));
 }
 
 void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
@@ -222,5 +216,5 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
-	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->PlayerMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
+	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), this->EntityMesh->GetForwardVector() *CrosshairDistance + this->GetActorLocation() /*this->PlayerPosition + */, CrosshairPosition, true);
 }
