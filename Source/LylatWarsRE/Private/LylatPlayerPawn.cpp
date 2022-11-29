@@ -107,6 +107,7 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 	SpawnParams.Instigator = GetInstigator();
 
 	FVector Location = PlayerMesh->GetRelativeLocation() + GetRootComponent()->GetRelativeLocation();
+	FVector Location = PlayerMesh->GetComponentLocation();
 	FRotator Rotation = PlayerRotation.Rotation();
 	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
 	if (Projectile)
