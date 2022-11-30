@@ -17,7 +17,8 @@ class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
 public:
 	UPROPERTY(Category = "Lylat Player", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* PlayerTrailMesh;
-
+	UPROPERTY(Category = "Lylat Player|Bullet", EditDefaultsOnly)
+		class UStaticMesh* PlayerBulletMesh = nullptr;
 	UPROPERTY(Category = "Lylat Player|Camera", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UCameraComponent* Camera;
 

@@ -28,6 +28,9 @@ public:
 	// Sets default values for this actor's properties
 	ALylatNormalBullet(const FObjectInitializer& ObjectInitializer);
 
+	// Sets the bullet of the mesh
+	void SetBulletMesh(UStaticMesh *mesh);
+
 	void FireInDirection(const FVector& ShootDirection, AActor* ownerIn, bool playerSpawned = false);
 protected:
 	// Called when the game starts or when spawned
