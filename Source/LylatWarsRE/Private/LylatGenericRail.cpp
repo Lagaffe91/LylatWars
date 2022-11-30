@@ -18,16 +18,15 @@ ALylatGenericRail::ALylatGenericRail()
 void ALylatGenericRail::BeginPlay()
 {
 	Super::BeginPlay();
-	if(railStartDelay <= 0)
-	{ 
-		this->SpawnActorsOnRail();
-		this->UpdateAllActorsTransform(0);
+
+	if (railStartDelay > 0)
+	{
+		FTimerHandle _;
+		GetWorldTimerManager().SetTimer(_, this, &ALylatGenericRail::SpawnActorsOnRail, railStartDelay, false);
 	}
 	else
 	{
-		;
-		FTimerHandle _;
-		GetWorldTimerManager().SetTimer(_, this, &ALylatGenericRail::SpawnActorsOnRail, railStartDelay, false);
+		this->SpawnActorsOnRail();
 	}
 }
 
@@ -57,7 +56,7 @@ void ALylatGenericRail::Tick(float DeltaTime)
 			}
 			else
 			{
-				this->RailEnded_Implementation();
+				this->RailIsOver = true;
 				this->RailEnded();
 			}
 		}
@@ -94,12 +93,20 @@ void ALylatGenericRail::SetRailSpeed(const float& NewSpeed)
 
 void ALylatGenericRail::RailEnded_Implementation()
 {
-	this->RailIsOver = true;
+	this->DestroyAllActors();
 }
 
 bool ALylatGenericRail::RailShouldLoop()
 {
 	return railTime > SplineComponent->GetSplineLength();
+}
+
+void ALylatGenericRail::DestroyAllActors()
+{
+	for (ALylatEntity* entity : ActorsOnRail)
+	{
+		entity->Destroy();
+	}
 }
 
 void ALylatGenericRail::RailLoop()
@@ -149,6 +156,7 @@ void ALylatGenericRail::SpawnActorsOnRail()
 			else
 			{
 				ActorsOnRail.Add(actorPtr);
+				Debug("Actord spawned :%s " , *actorPtr->GetName());
 			}
 		}
 	}
