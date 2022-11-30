@@ -8,6 +8,9 @@
 #include "LylatNormalBullet.h"
 #include "LylatWeakPoint.h"
 
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "LylatBoss.generated.h"
 
 
@@ -23,8 +26,9 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	float Speed = 500.0f;
+	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame
@@ -37,6 +41,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 		UStaticMeshComponent* BossMesh;
 
+#if 1
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+		UStaticMeshComponent* BossLefGun;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+		UStaticMeshComponent* BossRightGun;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+		FVector LeftGunPosition = FVector(310.0F, -260, 170.0F);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+		FVector RightGunPosition = FVector(310.0f,260,170.0f);
+
+#endif
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 		int Lives;
@@ -54,7 +72,23 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		TArray<ALylatWeakPoint*> BossWeakPoints;
 
-private:
+
+	UPROPERTY(EditDefaultsOnly, Category = "FireParticle")
+		UParticleSystem* FireParticle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+		 bool CanFire;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+		bool IsAttacking;
+
+
+	//NOTE(o.lunada): Maybe we should do with an AI ..thinking on that
+	void Fire();
+	void Attack();
+		
+
+protected:
 	float BulletCooldown;
 
 
