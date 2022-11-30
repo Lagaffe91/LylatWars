@@ -66,8 +66,9 @@ int ALylatEnemy::GetScoreAmount()
 
 void ALylatEnemy::DestroyEntity()
 {
-	//TODO
-	UGameplayStatics::GetGameInstance(GetWorld());
+	ALylatGameMode* GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+		GameMode->AddScore(GetScoreAmount());
 	ALylatEntity::DestroyEntity();
 }
 
