@@ -1,5 +1,5 @@
 #include "LylatNormalBullet.h"
-
+#include "LylatEntity.h"
 #include "DebugString.h"
 
 // Sets default values
@@ -18,8 +18,8 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>            (TEXT("CollisionComponent"));
 
 	//TODO: change this value to be reasonable
-	CollisionComponent->InitSphereRadius(15.0f);
 	CollisionComponent->SetGenerateOverlapEvents(true);
+	CollisionComponent->InitSphereRadius(1.0f);
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // We want overlaps.
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ALylatNormalBullet::HitboxBeginOverlap);

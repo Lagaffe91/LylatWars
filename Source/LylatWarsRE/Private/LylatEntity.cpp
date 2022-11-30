@@ -56,5 +56,6 @@ void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	Debug("Entity is colliding",0);
     //TODO(victor):move this inside enemy death function
 	ALylatGameMode *GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
-	GameMode->AddScore(10);
+	if(GameMode)
+		GameMode->AddScore(10);
 }
