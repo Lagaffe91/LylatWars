@@ -18,9 +18,17 @@ ALylatGenericRail::ALylatGenericRail()
 void ALylatGenericRail::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	this->SpawnActorsOnRail();
-	this->UpdateAllActorsTransform(0);
+	if(railStartDelay <= 0)
+	{ 
+		this->SpawnActorsOnRail();
+		this->UpdateAllActorsTransform(0);
+	}
+	else
+	{
+		;
+		FTimerHandle _;
+		GetWorldTimerManager().SetTimer(_, this, &ALylatGenericRail::SpawnActorsOnRail, railStartDelay, false);
+	}
 }
 
 // Called every frame
@@ -28,7 +36,7 @@ void ALylatGenericRail::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (RailIsOver || ActorsOnRail.Num() == 0)	//end of rail/No actors to update
+	if (RailIsOver)	
 	{
 		return;
 	}
@@ -77,6 +85,11 @@ void ALylatGenericRail::JoinRailArray(TArray<ALylatEntity*> Actors)
 	{
 		ComputeEnityMeshTransform(Entity);
 	}
+}
+
+void ALylatGenericRail::SetRailSpeed(const float& NewSpeed)
+{
+	this->railSpeed = NewSpeed;
 }
 
 void ALylatGenericRail::RailEnded_Implementation()
