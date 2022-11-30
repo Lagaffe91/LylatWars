@@ -61,18 +61,24 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/**Attach the actors to this rail, keeping it's relative position*/
 	UFUNCTION(BlueprintCallable)
 		void JoinRail(TSubclassOf<ALylatEntity> Actor);
+	/**Attach all actors from the array to this rail, keeping their relative position*/
 	UFUNCTION(BlueprintCallable)
 		void JoinRailArray(TArray<ALylatEntity*> Actors);
+	/**Set rail speed*/
+	UFUNCTION(BlueprintCallable)
+		void SetRailSpeed(const float& NewSpeed);
+	/**Will be called when actors are at the end of the rail*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
 		void RailEnded();
 	void RailEnded_Implementation();
-
+	/**Return true if the rail is about to loop*/
 	UFUNCTION(BlueprintCallable)
 		bool RailShouldLoop();
-
-	UFUNCTION(BlueprintCallable)
+	/**Loop code*/
+	UFUNCTION()
 		void RailLoop();
 
 private :
@@ -83,4 +89,8 @@ private :
 	void UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time);
 	void UpdateActorTransform(ALylatEntity*Actor, const float& Time);
 	void UpdateAllActorsTransform(const float& Time);
+
+
+private :
+	bool ActorsAreSpawned = false;
 };

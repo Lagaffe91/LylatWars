@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "LylatEnemy.h"
 
-#include "LylatHomingBullet.h"
-
 #include "LylatMikuEnemy.generated.h"
 
 /**
@@ -26,11 +24,13 @@ public :
 	UPROPERTY(Category = "Miku", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
 		float MikuShotCooldown = 5;
 
-	UPROPERTY(Category = "Miku", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category = "Miku", VisibleInstanceOnly, BlueprintReadOnly)
 		float MikuShotTimer = 5;
 
 public :
 	void Behaviour_Implementation(float DeltaTime)	override;
+
+	void Animate_Implementation(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Miku")
 		void ResetShotTimer();

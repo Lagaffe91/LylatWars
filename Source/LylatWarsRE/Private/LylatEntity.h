@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Components/ArrowComponent.h"
+#include "LylatGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "LylatEntity.generated.h"
 
 class ALylatNormalBullet;
@@ -32,9 +35,12 @@ public:
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UStaticMeshComponent* EntityMesh;
 
-	/*UBoxComponent representing the hitbox of the entity**/
+	/**UBoxComponent representing the hitbox of the entity**/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* EntityHitbox;
+	/**Location of spawning bullets **/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		class UArrowComponent* BulletSpawnPosition;
 
 	/**Max life of the entity*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))

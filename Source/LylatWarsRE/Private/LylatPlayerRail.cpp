@@ -3,6 +3,9 @@
 
 #include "LylatPlayerRail.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "LylatPlayerPawn.h"
+
 ALylatPlayerRail::ALylatPlayerRail(): ALylatGenericRail()
 {
 }
@@ -11,7 +14,8 @@ void ALylatPlayerRail::BeginPlay()
 {
 	if (smartPossess)
 	{
-		this->ActorsOnRail.Add((ALylatEntity*)GetWorld()->GetFirstPlayerController()->GetPawn());
+		ALylatPlayerPawn* player = (ALylatPlayerPawn*)UGameplayStatics::GetActorOfClass(GetWorld(), ALylatPlayerPawn::StaticClass());
+		this->ActorsOnRail.Add(player);
 	}
 	else
 	{

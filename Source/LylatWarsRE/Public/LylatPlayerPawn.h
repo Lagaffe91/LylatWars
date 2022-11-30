@@ -33,7 +33,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Lylat Player|Camera")
 		float CameraDistance = -200.0f;
 
-	/** The ration between the center of the screen and the player position when the player moves */
+	/** The ratio between the center of the screen and the player position when the player moves */
 	UPROPERTY(EditAnywhere, Category = "Lylat Player|Camera")
 		float CameraFollowRatio = 0.75f;
 

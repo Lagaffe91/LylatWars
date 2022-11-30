@@ -1,5 +1,5 @@
 #include "LylatNormalBullet.h"
-
+#include "LylatEntity.h"
 #include "DebugString.h"
 #include "LylatPlayerPawn.h"
 

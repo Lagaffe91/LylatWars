@@ -3,6 +3,9 @@
 
 #include "LylatMikuEnemy.h"
 
+#include "LylatHomingBullet.h"
+#include "DebugString.h"
+
 ALylatMikuEnemy::ALylatMikuEnemy()
 {
 	ResetShotTimer();
@@ -21,6 +24,11 @@ void ALylatMikuEnemy::Behaviour_Implementation(float DeltaTime)
 	}
 }
 
+void ALylatMikuEnemy::Animate_Implementation(float DeltaTime)
+{
+	this->EntityMesh->SetRelativeTransform();
+}
+
 void ALylatMikuEnemy::ResetShotTimer()
 {
 	this->MikuShotTimer = this->MikuShotCooldown;
@@ -36,6 +44,8 @@ void ALylatMikuEnemy::SetCooldown(const float& NewCooldown)
 
 void ALylatMikuEnemy::ShootBullet()
 {
+	Debug("Miku is shooting");
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
@@ -43,11 +53,13 @@ void ALylatMikuEnemy::ShootBullet()
 	FVector Location = EntityMesh->GetComponentLocation();
 	FRotator Rotation = this->EntityMesh->GetComponentRotation();
 	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+	
 	if (Projectile)
 	{
-		// Set the projectile's initial trajectory.
-		//FVector LaunchDirection = this->GetWorld();
-		//Projectile->FireInDirection(LaunchDirection);
+		//Set the projectile's initial trajectory.
+		FVector LaunchDirection = this->PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
+		LaunchDirection.Normalize();
+		Projectile->FireInDirection(LaunchDirection);
 	}
 }
 
