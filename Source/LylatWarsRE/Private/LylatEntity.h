@@ -49,6 +49,10 @@ public:
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		int EntityLife = 0;
 
+	/**Type of bullets shot by the entity*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		TSubclassOf<ALylatNormalBullet> BulletType;
+
 public:
 
 	UFUNCTION()

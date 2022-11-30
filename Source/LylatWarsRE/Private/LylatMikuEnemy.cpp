@@ -53,7 +53,7 @@ void ALylatMikuEnemy::ShootBullet()
 
 	FVector Location = EntityMesh->GetComponentLocation();
 	FRotator Rotation = this->EntityMesh->GetComponentRotation();
-	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(BulletType, Location, Rotation, SpawnParams);
 	
 	if (Projectile)
 	{

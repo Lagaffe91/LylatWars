@@ -22,8 +22,8 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 	CollisionComponent->InitSphereRadius(15.0f);
 
 	BulletMovement->SetUpdatedComponent(CollisionComponent);
-	BulletMovement->InitialSpeed = 3000.0f;
-	BulletMovement->MaxSpeed = 3000.0f;
+	BulletMovement->InitialSpeed = BulletSpeed;
+	BulletMovement->MaxSpeed = BulletSpeed;
 	BulletMovement->bRotationFollowsVelocity = true;
 	BulletMovement->bShouldBounce = true;
 	BulletMovement->Bounciness = 0.3f;
@@ -57,6 +57,8 @@ void ALylatNormalBullet::BeginPlay()
 	SphereMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // We want overlaps.
 	SphereMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
 	SphereMesh->OnComponentBeginOverlap.AddUniqueDynamic(this, &ALylatNormalBullet::HitboxBeginOverlap);
+	BulletMovement->InitialSpeed = BulletSpeed;
+	BulletMovement->MaxSpeed = BulletSpeed;
 }
 
 // Called every frame

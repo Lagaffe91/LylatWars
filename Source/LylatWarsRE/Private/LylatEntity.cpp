@@ -83,12 +83,6 @@ void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
 
 void ALylatEntity::TakeEntityDamage(AActor* entity)
 {
-	if (Cast<ALylatPlayerPawn>(entity))
-	EntityLife--;
-	if (EntityLife <= 0)
-	{
-		DestroyEntity();
-	}
 }
 
 void ALylatEntity::DestroyEntity()

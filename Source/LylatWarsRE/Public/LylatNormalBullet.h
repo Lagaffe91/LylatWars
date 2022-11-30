@@ -22,6 +22,9 @@ public:
 	UStaticMeshComponent         *SphereMesh;
 	UPROPERTY(Category = "Lylat Bullet", VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent             *CollisionComponent;
+
+	UPROPERTY(Category = "Lylat Bullet", EditAnywhere, BlueprintReadOnly)
+		float BulletSpeed = 3000.0f;
 	AActor* owner = nullptr;
 	bool isPlayerSpawned = false;
 public:	

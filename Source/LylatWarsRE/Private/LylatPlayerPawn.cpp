@@ -106,7 +106,7 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 
 	FVector Location = BulletSpawnPosition->GetComponentLocation();
 	FRotator Rotation = PlayerRotation.Rotation();
-	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+	ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(BulletType, Location, Rotation, SpawnParams);
 	if (Projectile)
 	{
 		// Set the projectile's initial trajectory.
