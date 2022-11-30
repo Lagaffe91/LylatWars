@@ -3,7 +3,9 @@
 
 #include "LylatMikuEnemy.h"
 
-#include "LylatHomingBullet.h"
+#include "LylatHomingBullet.h" //Wrong include
+#include "LylatPlayerPawn.h"
+
 #include "DebugString.h"
 
 ALylatMikuEnemy::ALylatMikuEnemy()
@@ -26,7 +28,8 @@ void ALylatMikuEnemy::Behaviour_Implementation(float DeltaTime)
 
 void ALylatMikuEnemy::Animate_Implementation(float DeltaTime)
 {
-	//this->EntityMesh->SetRelativeTransform();
+	FQuat NewRotation = this->EntityMesh->GetComponentQuat() * FQuat::FQuat(FVector(0, 0, 1), DeltaTime * AnimationSpeed);
+	this->EntityMesh->SetWorldRotation(NewRotation);
 }
 
 void ALylatMikuEnemy::ResetShotTimer()
@@ -44,8 +47,6 @@ void ALylatMikuEnemy::SetCooldown(const float& NewCooldown)
 
 void ALylatMikuEnemy::ShootBullet()
 {
-	Debug("Miku is shooting");
-
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
