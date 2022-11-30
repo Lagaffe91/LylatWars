@@ -39,4 +39,6 @@ public :
 		void SetCooldown(const float& NewCooldown);
 
 	virtual void ShootBullet() override;
+
+	virtual int GetScoreAmount() override;
 };

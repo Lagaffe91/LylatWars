@@ -3,7 +3,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
-#include "Kismet/GameplayStatics.h"	
+#include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
 
 #include "DebugString.h"
 
@@ -33,6 +34,8 @@ void ALylatPlayerPawn::BeginPlay()
 	DefaultTrailSize = PlayerTrailMesh->GetRelativeScale3D();
 	LastPosition = GetActorLocation();
 	resetGyro = true;
+	defaultPlayerPos = EntityMesh->GetRelativeLocation();
+	defaultPlayerRot = EntityMesh->GetRelativeRotation().Euler();
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -108,7 +111,7 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 	{
 		// Set the projectile's initial trajectory.
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
-		Projectile->FireInDirection(LaunchDirection);
+		Projectile->FireInDirection(LaunchDirection, this, true);
 	}
 	ShootCD = ShootCooldown;
 }
@@ -139,7 +142,7 @@ void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 	float rotationX = PlayerRotation.X;
 	PlayerRotation = PlayerRotation * (1 - PlayerUnturnSpeed * DeltaTime);
 	PlayerRotation.X = rotationX;
-	EntityMesh->SetRelativeLocationAndRotation(PlayerPosition, FQuat::MakeFromEuler(PlayerRotation + FVector(PlayerRotation.Z * 0.5f, PlayerPosition.Z / PlayerPlaneSize.Y * 40, PlayerPosition.Y / PlayerPlaneSize.X * 80)));
+	EntityMesh->SetRelativeLocationAndRotation(PlayerPosition + defaultPlayerPos, FQuat::MakeFromEuler(PlayerRotation + defaultPlayerRot + FVector(PlayerRotation.Z * 0.5f, PlayerPosition.Z / PlayerPlaneSize.Y * 40, PlayerPosition.Y / PlayerPlaneSize.X * 80)));
 }
 
 void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
@@ -173,6 +176,7 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 	if (BarrelRollAnim <= 0.0f)
 	{
 		PlayerRotation.X = 0;
+		EntityHitbox->SetActive(true);
 	}
 	else
 	{
@@ -181,6 +185,7 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 		if (PlayerRotation.X < -180.0f) PlayerRotation.X += 360.0f;
 		if (PlayerRotation.X > 180.0f) PlayerRotation.X -= 360.0f;
 		BarrelRollAnim -= DeltaTime;
+		EntityHitbox->SetActive(false);
 	}
 }
 
@@ -191,6 +196,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	if (ViewportSize.X <= 0.0f || ViewportSize.Y <= 0.0f)
 	{
 		ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+		resetGyro = true;
 	}
 	ComputeCrosshairPosition();
 	UpdateShooting(DeltaTime);
@@ -215,9 +221,35 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ALylatPlayerPawn::TouchUp);
 }
 
+void ALylatPlayerPawn::DestroyEntity()
+{
+	//TODO
+}
+
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
 	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + EntityMesh->GetComponentLocation(), CrosshairPosition);
 	CrosshairPosition = FVector2D(FMath::Clamp(CrosshairPosition.X, -50.0f, ViewportSize.X + 50.0f), FMath::Clamp(CrosshairPosition.Y, -50.0f, ViewportSize.Y + 50.0f));
 	oldDir = this->EntityMesh->GetForwardVector();
+}
+
+void ALylatPlayerPawn::TakeEntityDamage(AActor* entity)
+{
+	if (Cast<ALylatEntity>(entity))
+		EntityLife--;
+	if (EntityLife <= 0)
+	{
+		DestroyEntity();
+	}
+}
+
+void ALylatPlayerPawn::TakeBulletDamage(ALylatNormalBullet* bullet)
+{
+	if (bullet->isPlayerSpawned) return;
+	Debug("Touched bullet", 0);
+	EntityLife--;
+	if (EntityLife <= 0)
+	{
+		DestroyEntity();
+	}
 }

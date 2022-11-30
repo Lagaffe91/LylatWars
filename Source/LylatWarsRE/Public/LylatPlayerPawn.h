@@ -133,6 +133,8 @@ protected:
 	FVector2D touchCurrent;
 	FVector2D touchVel;
 	FVector oldDir;
+	FVector defaultPlayerPos;
+	FVector defaultPlayerRot;
 	FQuat defaultRotation;
 
 public:	
@@ -142,4 +144,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void TakeEntityDamage(AActor* entity) override;
+
+	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
+
+	virtual void DestroyEntity();
 };

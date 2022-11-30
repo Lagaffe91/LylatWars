@@ -50,3 +50,8 @@ void ALylatMikuEnemy::ShootBullet()
 		//Projectile->FireInDirection(LaunchDirection);
 	}
 }
+
+int ALylatMikuEnemy::GetScoreAmount()
+{
+	return 100;
+}

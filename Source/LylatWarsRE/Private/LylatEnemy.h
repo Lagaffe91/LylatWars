@@ -40,4 +40,9 @@ public:
 	/**Shoot a bullet following it's implementation*/
 	UFUNCTION(BlueprintCallable, Category = "Lylat Enemy|Events")
 		virtual void ShootBullet() {};
+
+	UFUNCTION()
+		virtual int GetScoreAmount();
+
+	virtual void DestroyEntity() override;
 };

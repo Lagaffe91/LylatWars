@@ -1,7 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "LylatEnemy.h"
+
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ALylatEnemy::ALylatEnemy() : ALylatEntity()
@@ -32,5 +31,17 @@ void ALylatEnemy::Tick(float DeltaTime)
 void ALylatEnemy::Activate()
 {
 	this->IsActivated = true;
+}
+
+int ALylatEnemy::GetScoreAmount()
+{
+	return 0;
+}
+
+void ALylatEnemy::DestroyEntity()
+{
+	//TODO
+	UGameplayStatics::GetGameInstance(GetWorld());
+	ALylatEntity::DestroyEntity();
 }
 

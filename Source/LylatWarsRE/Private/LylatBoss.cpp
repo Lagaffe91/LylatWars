@@ -55,7 +55,7 @@ void ALylatBoss::Tick(float DeltaTime)
 			if (Projectile)
 			{
 				FVector LaunchDirection = BossMesh->GetForwardVector();
-				Projectile->FireInDirection(LaunchDirection);
+				Projectile->FireInDirection(LaunchDirection, this);
 			}
 
 			BulletCooldown = 0.5f;

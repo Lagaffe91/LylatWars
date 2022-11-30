@@ -5,6 +5,8 @@
 
 #include "DebugString.h"
 #include "Components/BoxComponent.h"
+#include "LylatNormalBullet.h"
+#include "LylatPlayerPawn.h"
 
 // Sets default values
 ALylatEntity::ALylatEntity()
@@ -24,15 +26,17 @@ ALylatEntity::ALylatEntity()
 
 	EntityHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Entity Hitbox"));
 	EntityHitbox->SetupAttachment(EntityMesh);
-	EntityHitbox->SetGenerateOverlapEvents(true);
-	EntityHitbox->OnComponentBeginOverlap.AddDynamic(this, &ALylatEntity::HitboxBeginOverlap);
 }
 
 // Called when the game starts or when spawned
 void ALylatEntity::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	EntityHitbox->SetGenerateOverlapEvents(true);
+	EntityHitbox->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // We want overlaps.
+	EntityHitbox->SetCollisionResponseToAllChannels(ECR_Overlap);
+	EntityHitbox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ALylatEntity::HitboxBeginOverlap);
+	EntityLife = EntityMaxLife;
 }
 
 // Called every frame
@@ -51,5 +55,41 @@ void ALylatEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Debug("Entity is colliding",0);
+	if (OtherActor == this || EntityLife <= 0) return;
+	ALylatNormalBullet* bullet = Cast<ALylatNormalBullet>(OtherActor);
+	if (bullet)
+	{
+		return;
+	}
+	else
+	{
+		//Debug("Touched actor %s", *OtherActor->GetName());
+		TakeEntityDamage(OtherActor);
+	}
+}
+
+void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
+{
+	if (!bullet->isPlayerSpawned) return;
+	//Debug("Touched bullet", 0);
+	EntityLife--;
+	if (EntityLife <= 0)
+	{
+		DestroyEntity();
+	}
+}
+
+void ALylatEntity::TakeEntityDamage(AActor* entity)
+{
+	if (Cast<ALylatPlayerPawn>(entity))
+	EntityLife--;
+	if (EntityLife <= 0)
+	{
+		DestroyEntity();
+	}
+}
+
+void ALylatEntity::DestroyEntity()
+{
+	Destroy();
 }
