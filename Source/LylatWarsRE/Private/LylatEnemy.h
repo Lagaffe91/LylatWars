@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LylatPlayerPawn.h"
 #include "LylatEntity.h"
+#include "DebugString.h"
 #include "LylatEnemy.generated.h"
 
 UCLASS()
@@ -24,10 +24,11 @@ public :
 	/**Will activate after a delay (if not already activated)*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lylat Enemy|Parameters", meta = (ClampMin = "0"))
 		float ActivtionDelay = 0;
-
 	/**Reference to the player*/
 	UPROPERTY(BlueprintReadWrite, Category = "Lylat Enemy|References")
 		class ALylatPlayerPawn* PlayerReference;
+	UPROPERTY(Category = "Lylat Enemy|Parameters", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
+		float AnimationSpeed = 1;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,7 +53,7 @@ public:
 	virtual void Animate_Implementation(float DeltaTime) {};
 	/**Shoot a bullet following it's implementation*/
 	UFUNCTION(BlueprintCallable, Category = "Lylat Enemy|Events")
-		virtual void ShootBullet() {};
+		virtual void ShootBullet() { Debug("This enemy cant shoot !",0); };
 
 	UFUNCTION()
 		virtual int GetScoreAmount();
