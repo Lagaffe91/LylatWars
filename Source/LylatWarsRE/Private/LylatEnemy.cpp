@@ -1,6 +1,7 @@
 #include "LylatEnemy.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "DebugString.h"
 
 // Sets default values
 ALylatEnemy::ALylatEnemy() : ALylatEntity()
@@ -68,7 +69,13 @@ void ALylatEnemy::DestroyEntity()
 {
 	ALylatGameMode* GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode)
+	{
 		GameMode->AddScore(GetScoreAmount());
+	}
+	else
+	{
+		DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings",0);
+	}
 	ALylatEntity::DestroyEntity();
 }
 
