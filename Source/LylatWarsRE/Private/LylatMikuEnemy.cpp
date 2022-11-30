@@ -28,7 +28,7 @@ void ALylatMikuEnemy::Behaviour_Implementation(float DeltaTime)
 
 void ALylatMikuEnemy::Animate_Implementation(float DeltaTime)
 {
-	FQuat NewRotation = this->EntityMesh->GetComponentQuat() * FQuat::FQuat(FVector(0, 0, 1), DeltaTime * AnimationSpeed);
+	FQuat NewRotation = this->EntityMesh->GetComponentQuat() * FQuat(FVector(0, 0, 1), DeltaTime * AnimationSpeed);
 	this->EntityMesh->SetWorldRotation(NewRotation);
 }
 

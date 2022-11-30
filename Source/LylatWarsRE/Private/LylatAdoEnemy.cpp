@@ -5,7 +5,7 @@
 
 void ALylatAdoEnemy::Animate_Implementation(float DeltaTime)
 {
-	FQuat NewRotation = this->EntityMesh->GetComponentQuat() * FQuat::FQuat(FVector(0,1,0), DeltaTime*AnimationSpeed);
+	FQuat NewRotation = this->EntityMesh->GetComponentQuat() * FQuat(FVector(0,1,0), DeltaTime*AnimationSpeed);
 	this->EntityMesh->SetWorldRotation(NewRotation);
 }
 
