@@ -18,7 +18,9 @@ class LYLATWARSRE_API ALylatNormalBullet : public AActor
 
 public:
 	UProjectileMovementComponent *BulletMovement;
+	UPROPERTY(Category = "Lylat Bullet", VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent         *SphereMesh;
+	UPROPERTY(Category = "Lylat Bullet", VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent             *CollisionComponent;
 public:	
 	// Sets default values for this actor's properties
@@ -32,5 +34,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 };

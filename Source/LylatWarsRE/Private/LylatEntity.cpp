@@ -14,11 +14,17 @@ ALylatEntity::ALylatEntity()
 
 	EntityLife = EntityMaxLife;
 
+	if (!RootComponent)
+	{
+		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("EntitySceneComponent"));
+	}
+
 	EntityMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EntityMesh"));
 	EntityMesh->SetupAttachment(RootComponent);
 
 	EntityHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Entity Hitbox"));
 	EntityHitbox->SetupAttachment(EntityMesh);
+	EntityHitbox->SetGenerateOverlapEvents(true);
 	EntityHitbox->OnComponentBeginOverlap.AddDynamic(this, &ALylatEntity::HitboxBeginOverlap);
 }
 

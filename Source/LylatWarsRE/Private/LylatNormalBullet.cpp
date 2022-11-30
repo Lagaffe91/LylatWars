@@ -1,7 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "LylatNormalBullet.h"
+
+#include "DebugString.h"
 
 // Sets default values
 ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializer)
@@ -20,6 +19,10 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 
 	//TODO: change this value to be reasonable
 	CollisionComponent->InitSphereRadius(15.0f);
+	CollisionComponent->SetGenerateOverlapEvents(true);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // We want overlaps.
+	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ALylatNormalBullet::HitboxBeginOverlap);
 
 	BulletMovement->SetUpdatedComponent(CollisionComponent);
 	BulletMovement->InitialSpeed = 3000.0f;
@@ -33,6 +36,10 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
+	SphereMesh->SetGenerateOverlapEvents(true);
+	SphereMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // We want overlaps.
+	SphereMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+	SphereMesh->OnComponentBeginOverlap.AddDynamic(this, &ALylatNormalBullet::HitboxBeginOverlap);
 	SphereMesh->SetupAttachment(RootComponent);
 	SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
 }
@@ -45,7 +52,6 @@ void ALylatNormalBullet::FireInDirection(const FVector& ShootDirection)
 void ALylatNormalBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -55,3 +61,7 @@ void ALylatNormalBullet::Tick(float DeltaTime)
 
 }
 
+void ALylatNormalBullet::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Debug("Bullet is colliding", 0);
+}
