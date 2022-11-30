@@ -112,6 +112,8 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 		// Set the projectile's initial trajectory.
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this, true);
+		if (PlayerBulletMesh)
+			Projectile->SetBulletMesh(PlayerBulletMesh);
 	}
 	ShootCD = ShootCooldown;
 }

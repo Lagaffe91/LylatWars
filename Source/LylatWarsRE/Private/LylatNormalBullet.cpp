@@ -61,6 +61,11 @@ void ALylatNormalBullet::BeginPlay()
 	BulletMovement->MaxSpeed = BulletSpeed;
 }
 
+void ALylatNormalBullet::SetBulletMesh(UStaticMesh *mesh)
+{
+	if (mesh)
+		SphereMesh->SetStaticMesh(mesh);
+}
 // Called every frame
 void ALylatNormalBullet::Tick(float DeltaTime)
 {
