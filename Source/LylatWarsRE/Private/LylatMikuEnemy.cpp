@@ -26,7 +26,7 @@ void ALylatMikuEnemy::Behaviour_Implementation(float DeltaTime)
 
 void ALylatMikuEnemy::Animate_Implementation(float DeltaTime)
 {
-	this->EntityMesh->SetRelativeTransform();
+	//this->EntityMesh->SetRelativeTransform();
 }
 
 void ALylatMikuEnemy::ResetShotTimer()
@@ -59,7 +59,7 @@ void ALylatMikuEnemy::ShootBullet()
 		//Set the projectile's initial trajectory.
 		FVector LaunchDirection = this->PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
 		LaunchDirection.Normalize();
-		Projectile->FireInDirection(LaunchDirection);
+		Projectile->FireInDirection(LaunchDirection, this);
 	}
 }
 
