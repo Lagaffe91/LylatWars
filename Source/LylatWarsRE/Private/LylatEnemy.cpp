@@ -1,5 +1,6 @@
 #include "LylatEnemy.h"
 
+#include "LylatPlayerPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "DebugString.h"
 

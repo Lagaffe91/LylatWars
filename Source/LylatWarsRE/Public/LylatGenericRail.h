@@ -77,6 +77,9 @@ public:
 	/**Return true if the rail is about to loop*/
 	UFUNCTION(BlueprintCallable)
 		bool RailShouldLoop();
+	/**Destroy all actors referenced on the rail*/
+	UFUNCTION(BlueprintCallable)
+	void DestroyAllActors();
 	/**Loop code*/
 	UFUNCTION()
 		void RailLoop();
