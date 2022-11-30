@@ -54,4 +54,7 @@ void ALylatEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Debug("Entity is colliding",0);
+    //TODO(victor):move this inside enemy death function
+	ALylatGameMode *GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->AddScore(10);
 }

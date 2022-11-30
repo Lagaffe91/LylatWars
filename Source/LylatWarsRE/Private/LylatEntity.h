@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/ArrowComponent.h"
+#include "LylatGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "LylatEntity.generated.h"
 
 UCLASS()
