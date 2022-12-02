@@ -4,39 +4,20 @@
 #include "LylatBoss.h"
 #include "LylatWeakPoint.h"
 #include "Kismet/GameplayStatics.h"	
+
+#include "LylatPlayerPawn.h"
+#include "LylatNormalBullet.h"
 #include "LylatWarsRE/Public/LylatHomingBullet.h"
 
 
 // Sets default values
 ALylatBoss::ALylatBoss()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Lives = 5.0f;
-	IsDead = false;
 	CanFire = false;
 	IsAttacking = false;
 	BulletCooldown = 0.0f;
-
-
-
-	USceneComponent* Boss = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-
-
-	BossMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BossMesh"));
-	BossMesh->SetRelativeLocationAndRotation(BossPosition, FQuat::MakeFromEuler(BossRotation));
-	BossMesh->SetupAttachment(Boss);
-
-#if 1
-	BossLefGun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftGun"));
-	BossLefGun->SetRelativeLocationAndRotation(LeftGunPosition, FQuat::MakeFromEuler(BossRotation));
-	BossLefGun->SetupAttachment(Boss);
-
-	BossRightGun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightGun"));
-	BossRightGun->SetRelativeLocationAndRotation(RightGunPosition, FQuat::MakeFromEuler(BossRotation));
-	BossRightGun->SetupAttachment(Boss);
-#endif
-
+	AttackRange = 2000.0f;
 
 }
 
@@ -44,7 +25,6 @@ ALylatBoss::ALylatBoss()
 void ALylatBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -53,59 +33,12 @@ void ALylatBoss::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	BulletCooldown -= DeltaTime;
 
-	if (!IsDead)
+	if (EntityLife > 0.0f)
 	{
-		BasicMovement(DeltaTime);
+		BossShoot();
 
-		if (BulletCooldown <= 0.0f)
-		{
-
-#if 1
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			SpawnParams.Instigator = GetInstigator();
-
-			FVector Location1 = BossLefGun->GetComponentLocation();
-			FRotator Rotation1 = BossRotation.Rotation();
-			ALylatNormalBullet* Projectile1 = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location1, Rotation1, SpawnParams);
-			if (Projectile1)
-			{
-				FVector LaunchDirection1 = BossLefGun->GetForwardVector();
-				Projectile1->FireInDirection(LaunchDirection1, this);
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIRE 1!!")));
-
-			}
-
-			FVector Location2 = BossRightGun->GetComponentLocation();
-			FRotator Rotation2 = BossRotation.Rotation();
-			ALylatNormalBullet* Projectile2 = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location2, Rotation2, SpawnParams);
-			if (Projectile2)
-			{
-				FVector LaunchDirection2 = BossRightGun->GetForwardVector();
-				Projectile2->FireInDirection(LaunchDirection2, this);
-
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIRE 2!!")));
-
-
-			}
-#endif
-			BulletCooldown = 0.5f;
-
-		}
-
-
-#if 0
-		ALylatHomingBullet
 		if (CanFire)
 			Fire();
-
-		if (IsAttacking)
-			Attack();
-
-#endif
-
-		
-
 	}
 }
 
@@ -118,20 +51,7 @@ void ALylatBoss::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ALylatBoss::BasicMovement(float deltaTime)
 {
-
-#if 0
-	BossRotation.Z += FMath::Cos(deltaTime) / 2;
-	BossRotation.X -= FMath::Sin(deltaTime) / 4;
-#endif
-
-
-	BossMesh->SetRelativeLocationAndRotation(BossPosition, FQuat::MakeFromEuler(BossRotation));
-
-	BossLefGun->SetRelativeLocationAndRotation(LeftGunPosition, FQuat::MakeFromEuler(BossRotation));
-	BossRightGun->SetRelativeLocationAndRotation(RightGunPosition, FQuat::MakeFromEuler(BossRotation));
-
-
-
+	EntityMesh->SetRelativeLocationAndRotation(BossPosition, FQuat::MakeFromEuler(BossRotation));
 }
 
 void ALylatBoss::Fire()
@@ -147,8 +67,44 @@ void ALylatBoss::Fire()
 
 
 
-void ALylatBoss::Attack()
+void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
-	//TODO(o.luanda): Do attack 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("ATTAAAAACK")));
+	if (bullet->isPlayerSpawned)
+	{
+		EntityLife--;
+	}
+
+	if (EntityLife <= 0.0f)
+		DestroyEntity();
+}
+
+
+void ALylatBoss::BossShoot()
+{
+	if (BulletCooldown <= 0.0f)
+	{
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		float distanceToTarget = FVector::DistSquared(PlayerReference->PlayerPosition, BossPosition);
+		if (distanceToTarget <= AttackRange * AttackRange)
+		{
+			FVector Location = BulletSpawnPosition->GetComponentLocation();
+			FRotator Rotation = BossRotation.Rotation();
+			ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+			if (Projectile)
+			{
+				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->BulletSpawnPosition->GetComponentLocation();
+				LaunchDirection.Normalize();
+				Projectile->FireInDirection(LaunchDirection, this);
+
+			}
+
+			BulletCooldown = 0.5f;
+
+		}
+
+	}
 }
