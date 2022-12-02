@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
+#include "DebugString.h"
 #include "LylatPlayerPawn.h"
 
 ALylatPlayerRail::ALylatPlayerRail(): ALylatGenericRail()
@@ -18,28 +19,29 @@ void ALylatPlayerRail::BeginPlay()
 		ALylatPlayerPawn* player = (ALylatPlayerPawn*)UGameplayStatics::GetActorOfClass(GetWorld(), ALylatPlayerPawn::StaticClass());
 		this->ActorsOnRail.Add(player);
 	}
-	else
-	{
-		this->SpawnActorsOnRail();
-	}
 
 	Super::BeginPlay();
 }
 
-void ALylatPlayerRail::ComputeRailDistance(float DeltaTime)
+void ALylatPlayerRail::ComputeRailDistance(float DeltaTime, ALylatEntity* Entity)
 {
-	railTime += (DeltaTime * speedMultiplier * railSpeed) + PlayerDashSpeed;
+	if (!Entity || !this->SplineComponent)
+	{	
+		Debug("Failed compute distance", 0);
+		return;
+	}
 
-	if (RailShouldLoop())	//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
+	Entity->EntityRailDistance += DeltaTime * speedMultiplier * railSpeed + PlayerDashSpeed;
+
+	if (RailShouldLoop(Entity))		//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
 	{
-		if (this->SplineComponent->IsClosedLoop())
+		if (SplineComponent->IsClosedLoop())
 		{
-			RailLoop();
+			RailLoop(Entity);
 		}
 		else
 		{
-			this->RailIsOver = true;
-			this->RailEnded();
+			Entity->RailEnded();
 		}
 	}
 }

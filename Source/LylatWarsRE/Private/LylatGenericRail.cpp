@@ -18,16 +18,6 @@ ALylatGenericRail::ALylatGenericRail()
 void ALylatGenericRail::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (railStartDelay > 0)
-	{
-		FTimerHandle _;
-		GetWorldTimerManager().SetTimer(_, this, &ALylatGenericRail::SpawnActorsOnRail, railStartDelay, false);
-	}
-	else
-	{
-		this->SpawnActorsOnRail();
-	}
 }
 
 // Called every frame
@@ -35,20 +25,14 @@ void ALylatGenericRail::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (RailIsOver)	
-	{
-		return;
-	}
-
 	if (railStartDelay > 0)
 	{
 		railStartDelay -= DeltaTime;
 	}
 	else
 	{
-		ComputeRailDistance(DeltaTime);
-	
-		this->UpdateAllActorsTransform(railTime);
+		this->UpdateEntitySpawning(DeltaTime);
+		this->UpdateAllActorsTransform(DeltaTime);
 	}
 }
 
@@ -57,7 +41,8 @@ void ALylatGenericRail::JoinRail(TSubclassOf<ALylatEntity> Actor)
 	if (Actor)
 	{
 		ActorsOnRail.Add(Actor.GetDefaultObject());
-
+		Actor.GetDefaultObject()->EntityIsOnARail = true;
+		Actor.GetDefaultObject()->EntityRailDistance = 0;
 		ComputeEnityMeshTransform(Actor.GetDefaultObject());
 	}
 }
@@ -65,10 +50,11 @@ void ALylatGenericRail::JoinRail(TSubclassOf<ALylatEntity> Actor)
 void ALylatGenericRail::JoinRailArray(TArray<ALylatEntity*> Actors)
 {
 	this->ActorsOnRail += Actors;
-	
-	//Compute new mesh location
+
 	for (ALylatEntity* Entity : Actors)
 	{
+		Entity->EntityRailDistance = 0;
+		Entity->EntityIsOnARail = true;
 		ComputeEnityMeshTransform(Entity);
 	}
 }
@@ -78,27 +64,22 @@ void ALylatGenericRail::SetRailSpeed(const float& NewSpeed)
 	this->railSpeed = NewSpeed;
 }
 
-void ALylatGenericRail::RailEnded_Implementation()
+bool ALylatGenericRail::RailShouldLoop(ALylatEntity* Entity)
 {
-	this->DestroyAllActors();
-}
-
-bool ALylatGenericRail::RailShouldLoop()
-{
-	return railTime > SplineComponent->GetSplineLength();
+	return Entity->EntityRailDistance > SplineComponent->GetSplineLength();
 }
 
 void ALylatGenericRail::DestroyAllActors()
 {
 	for (ALylatEntity* entity : ActorsOnRail)
 	{
-		entity->Destroy();
+		entity->DestroyEntity();
 	}
 }
 
-void ALylatGenericRail::RailLoop()
+void ALylatGenericRail::RailLoop(ALylatEntity* Entity)
 {
-	railTime /= SplineComponent->GetSplineLength();
+	Entity->EntityRailDistance /= SplineComponent->GetSplineLength();
 }
 
 void ALylatGenericRail::InitRail()
@@ -111,10 +92,9 @@ void ALylatGenericRail::ComputeEnityMeshTransform(ALylatEntity* Entity)
 {
 	if(Entity)
 	{ 
-		//FVector meshPosition = Entity->EntityMesh->GetComponentLocation();
 		FTransform meshTransform = Entity->EntityMesh->GetComponentTransform();
 
-		this->UpdateActorTransform(Entity, railTime);
+		this->UpdateActorTransform(Entity, 0);
 		
 		Entity->EntityMesh->SetWorldTransform(meshTransform);
 	}
@@ -125,74 +105,122 @@ void ALylatGenericRail::ComputeEnityMeshTransform(ALylatEntity* Entity)
 }
 
 void ALylatGenericRail::SpawnActorsOnRail()
-{
-	if (!SpawnActor)
-		return;
-
-	if (SplineComponent)
-	{
-		for (TSubclassOf<ALylatEntity> actor : ActorsToSpawn)
-		{
-			ALylatEntity*actorPtr = GetWorld()->SpawnActor<ALylatEntity>(actor, this->SplineComponent->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
-			
-			if (!actorPtr)
-			{
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Actor not correctly spawned"));
-			}
-			else
-			{
-				ActorsOnRail.Add(actorPtr);
-				Debug("Actord spawned :%s " , *actorPtr->GetName());
-			}
-		}
-	}
-	else
-	{
-		Debug("Spline component is wrong (not created ?)", 0);
-	}
+{	
+	DebugError("ALylatGenericRail::SpawnActorsOnRail() : !! DEPRECATED FUNCTION !!", 0);
 }
 
-void ALylatGenericRail::ComputeRailDistance(float DeltaTime)
+void ALylatGenericRail::ComputeRailDistance(float DeltaTime, ALylatEntity* Entity)
 {
-	railTime += DeltaTime * speedMultiplier * railSpeed;
+	Entity->EntityRailDistance += DeltaTime * speedMultiplier * railSpeed;
 
-	if (RailShouldLoop())	//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
+	if (RailShouldLoop(Entity))
 	{
 		if (SplineComponent->IsClosedLoop())
 		{
-			RailLoop();
+			RailLoop(Entity);
 		}
 		else
 		{
-			this->RailIsOver = true;
-			this->RailEnded();
+			Entity->RailEnded();
 		}
 	}
 }
 
-void ALylatGenericRail::UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time)
+void ALylatGenericRail::UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& DeltaTime)
 {
-	UpdateActorTransform(Actor.GetDefaultObject(), Time);
+	UpdateActorTransform(Actor.GetDefaultObject(), DeltaTime);
 }
 
-void ALylatGenericRail::UpdateActorTransform(ALylatEntity* Actor, const float& Time)
+void ALylatGenericRail::UpdateActorTransform(ALylatEntity* Entity, const float& DeltaTime)
 {
-	if (Actor && this->SplineComponent)
+	if (Entity && this->SplineComponent)
 	{
-		FTransform NewTranform = this->SplineComponent->GetTransformAtDistanceAlongSpline(Time, ESplineCoordinateSpace::World);
-		Actor->SetActorTransform(NewTranform);
+		this->ComputeRailDistance(DeltaTime, Entity);
+		FTransform NewTranform = this->SplineComponent->GetTransformAtDistanceAlongSpline(Entity->EntityRailDistance, ESplineCoordinateSpace::World);
+		Entity->SetActorTransform(NewTranform);
 	}
 	else
 	{
-		DebugError("Failed to update transform", 0);
+		DebugError("Failed to update transform (no spline/bad entity)", 0);
 	}
 }
 
-void ALylatGenericRail::UpdateAllActorsTransform(const float& Time)
+void ALylatGenericRail::UpdateAllActorsTransform(const float& DeltaTime)
 {
 	for (ALylatEntity* Actor : ActorsOnRail)
 	{
-		UpdateActorTransform(Actor, Time);
+		UpdateActorTransform(Actor, DeltaTime);
+	}
+}
+
+void ALylatGenericRail::UpdateEntitySpawning(float DeltaTime)
+{
+	if (this->ShouldSpawn())
+	{
+		this->SpawnTimer += DeltaTime;
+
+		if (this->SpawnTimer >= SpawnDelay)
+		{
+			this->SpawnNextEntity();
+			this->SpawnTimer = 0;
+		}
+	}
+}
+
+bool ALylatGenericRail::ShouldSpawn()
+{
+	return this->ActorsToSpawn.Num() > 0 && (this->InifiniteSpawn || !ActorsAreSpawned);
+}
+
+void ALylatGenericRail::SpawnNextEntity()
+{
+	if (!this->ActorsToSpawn.IsValidIndex(this->NextEntityIndex))
+	{
+		Debug("Bad index : index : %i", this->NextEntityIndex);
+		return;
+	}
+	TSubclassOf<ALylatEntity> SubClassEntity = this->ActorsToSpawn[this->NextEntityIndex];
+
+	ALylatEntity* Entity = nullptr;
+	if (SubClassEntity)
+	{
+		Entity = SubClassEntity.GetDefaultObject();
+	}
+	else
+	{
+		DebugError("Internal error : Cant spawn entity (bad index)",0);
+		return;
+	}
+	
+	this->NextEntityIndex++;
+
+	if (!this->ActorsToSpawn.IsValidIndex(this->NextEntityIndex))
+	{
+		this->NextEntityIndex = 0;
+		ActorsAreSpawned = true;	//First loop of the list
+	}
+
+	this->SpawnEntity(Entity);
+}
+
+void ALylatGenericRail::SpawnEntity(ALylatEntity* Entity)
+{
+	if (!Entity || !SplineComponent)
+	{
+		DebugError("Failed to spawn entity (no spline/bad entity)", 0);
+		return;
+	}
+
+	ALylatEntity* EntityPtr = GetWorld()->SpawnActor<ALylatEntity>(Entity->GetClass(), this->SplineComponent->GetTransformAtDistanceAlongSpline(0, ESplineCoordinateSpace::World));
+
+	if (!EntityPtr)
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Actor not correctly spawned"));
+	}
+	else
+	{
+		this->ActorsOnRail.Add(EntityPtr);
+		Debug("Actord spawned :%s ", *EntityPtr->GetName());
 	}
 }

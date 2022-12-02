@@ -55,6 +55,13 @@ public:
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		float EntityCurrentInvulneability = 0.0f;
 
+	/**Distance on the rail*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		int EntityRailDistance = 0;
+	/**True if entity is on a rail*/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		bool EntityIsOnARail = false;
+
 	/**Type of bullets shot by the entity*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
 		TSubclassOf<ALylatNormalBullet> BulletType;
@@ -72,4 +79,9 @@ public:
 
 	UFUNCTION()
 	virtual void DestroyEntity(bool addScore = true);
+
+	/**Will be called when actors are at the end of the rail*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
+		void RailEnded();
+	void RailEnded_Implementation();
 };
