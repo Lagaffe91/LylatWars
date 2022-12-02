@@ -14,11 +14,12 @@
 ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
+#if 0
 	IsAttacking = false;
+#endif
+
 	BulletCooldown = 0.0f;
-	AttackRange = 2000.0f;
 	FireCount = 0;
-	FireRate = 50;
 
 }
 
@@ -36,7 +37,13 @@ void ALylatBoss::Tick(float DeltaTime)
 
 
 	if (EntityLife > 0.0f)
+	{
 		BossShoot();
+
+		if (!(FireCount % FireRate))
+			Fire();
+	}
+
 }
 
 // Called to bind functionality to input
@@ -55,7 +62,7 @@ void ALylatBoss::Fire()
 
 #if 0
 	
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireParticle, BossMesh->GetForwardVector(), FRotator::ZeroRotator, true);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireParticle, this->EntityMesh->GetComponentLocation(), FRotator::ZeroRotator, true);
 #endif
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIREEEEEEE !!")));
@@ -74,6 +81,14 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 	if (EntityLife <= 0.0f)
 		DestroyEntity();
 #endif
+
+	FVector Scale = EntityMesh->GetComponentScale();
+
+	Scale -= FVector(0.05f, 0.05f, 0.05f);
+
+
+	if(EntityMesh->GetComponentScale().GetAbsMin() >= 0.1f)
+		this->EntityMesh->SetWorldScale3D(Scale);
 
 	ALylatEntity::TakeBulletDamage(bullet);
 
@@ -99,17 +114,20 @@ void ALylatBoss::BossShoot()
 			{
 				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
 				LaunchDirection.Normalize();
+
 				if (BossBulletMesh)
 					Projectile->SetBulletMesh(BossBulletMesh);
 				Projectile->FireInDirection(LaunchDirection, this);
 				FireCount++;
 			}
 
-			if (!(FireCount % FireRate))
-				Fire();
-
 			BulletCooldown = 0.6f;
 		}
 
 	}
+}
+
+int ALylatBoss::GetScoreAmount()
+{
+	return ScoreAmount;
 }
