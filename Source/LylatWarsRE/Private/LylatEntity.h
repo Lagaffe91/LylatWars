@@ -65,5 +65,5 @@ public:
 	virtual void TakeEntityDamage(AActor* entity);
 
 	UFUNCTION()
-	virtual void DestroyEntity();
+	virtual void DestroyEntity(bool addScore = true);
 };

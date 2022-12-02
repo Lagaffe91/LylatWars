@@ -85,7 +85,7 @@ void ALylatEntity::TakeEntityDamage(AActor* entity)
 {
 }
 
-void ALylatEntity::DestroyEntity()
+void ALylatEntity::DestroyEntity(bool addScore)
 {
 	Destroy();
 }

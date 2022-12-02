@@ -66,16 +66,19 @@ int ALylatEnemy::GetScoreAmount()
 	return 0;
 }
 
-void ALylatEnemy::DestroyEntity()
+void ALylatEnemy::DestroyEntity(bool addScore)
 {
 	ALylatGameMode* GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GameMode)
+	if (addScore)
 	{
-		GameMode->AddScore(GetScoreAmount());
-	}
-	else
-	{
-		DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings",0);
+		if (GameMode)
+		{
+			GameMode->AddScore(GetScoreAmount());
+		}
+		else
+		{
+			DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings", 0);
+		}
 	}
 	ALylatEntity::DestroyEntity();
 }

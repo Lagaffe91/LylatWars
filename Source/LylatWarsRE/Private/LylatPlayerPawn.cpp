@@ -183,7 +183,9 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this, true);
 		if (PlayerBulletMesh)
+		{
 			Projectile->SetBulletMesh(PlayerBulletMesh);
+		}
 	}
 	ShootCD = ShootCooldown;
 }
@@ -310,7 +312,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ALylatPlayerPawn::TouchUp);
 }
 
-void ALylatPlayerPawn::DestroyEntity()
+void ALylatPlayerPawn::DestroyEntity(bool addScore)
 {
 	//TODO
 }

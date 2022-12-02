@@ -16,5 +16,10 @@ void ALylatGameMode::AddScore(int value)
 {
 	Score += value;
 	//TODO(victor): temporary
-	Debug("Score = %d", Score);
+	//Debug("Score = %d", Score);
+}
+
+int ALylatGameMode::GetScore()
+{
+	return Score;
 }

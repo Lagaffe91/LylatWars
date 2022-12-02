@@ -58,7 +58,7 @@ public:
 	UFUNCTION()
 		virtual int GetScoreAmount();
 
-	virtual void DestroyEntity() override;
+	virtual void DestroyEntity(bool addScore = true) override;
 
 
 private : 

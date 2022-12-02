@@ -20,4 +20,7 @@ private:
 	int Score = 0;
 public:
 	void AddScore(int value);
+
+	UFUNCTION(BlueprintCallable, Category = "Score")
+	int GetScore();
 };

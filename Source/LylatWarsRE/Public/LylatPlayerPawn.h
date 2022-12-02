@@ -17,6 +17,7 @@ class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
 public:
 	UPROPERTY(Category = "Lylat Player", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* PlayerTrailMesh;
+	/** Btw why do we have a PlayerBulletMesh ? */
 	UPROPERTY(Category = "Lylat Player|Bullet", EditDefaultsOnly)
 		class UStaticMesh* PlayerBulletMesh = nullptr;
 	UPROPERTY(Category = "Lylat Player|Camera", VisibleDefaultsOnly, BlueprintReadOnly)
@@ -205,5 +206,5 @@ public:
 
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
 
-	virtual void DestroyEntity();
+	virtual void DestroyEntity(bool addScore = true);
 };
