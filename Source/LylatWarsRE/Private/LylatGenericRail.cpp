@@ -73,7 +73,7 @@ void ALylatGenericRail::DestroyAllActors()
 {
 	for (ALylatEntity* entity : ActorsOnRail)
 	{
-		entity->DestroyEntity();
+		entity->DestroyEntity(false);
 	}
 }
 
@@ -149,7 +149,14 @@ void ALylatGenericRail::UpdateAllActorsTransform(const float& DeltaTime)
 {
 	for (ALylatEntity* Actor : ActorsOnRail)
 	{
-		UpdateActorTransform(Actor, DeltaTime);
+		if (Actor)
+		{
+			UpdateActorTransform(Actor, DeltaTime);
+		}
+		else
+		{
+			ActorsOnRail.Remove(Actor);
+		}
 	}
 }
 
