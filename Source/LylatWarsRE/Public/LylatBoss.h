@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+//#include "CoreMinimal.h"
+//#include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "LylatWeakPoint.h"
 
@@ -56,21 +56,30 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "FireParticle")
 		UParticleSystem* FireParticle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+#if 0
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack")
 		bool IsAttacking;
+#endif
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Range")
-		float AttackRange;
+	UPROPERTY(Category = "Attack Range",EditAnywhere, BlueprintReadOnly)
+		float AttackRange = 2000.0f;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Range")
-		int FireRate;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
+		int FireRate = 50;
+
+	UPROPERTY(Category = "Boss Score Amount", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "500"))
+		int ScoreAmount = 1000;
 
 
 	void Fire();
 	
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
+
+	virtual int GetScoreAmount() override;
+
 
 protected:
 	float BulletCooldown;

@@ -14,11 +14,12 @@
 ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
+#if 0
 	IsAttacking = false;
+#endif
+
 	BulletCooldown = 0.0f;
-	AttackRange = 2000.0f;
 	FireCount = 0;
-	FireRate = 50;
 
 }
 
@@ -42,7 +43,6 @@ void ALylatBoss::Tick(float DeltaTime)
 		if (!(FireCount % FireRate))
 			Fire();
 	}
-
 
 }
 
@@ -125,4 +125,9 @@ void ALylatBoss::BossShoot()
 		}
 
 	}
+}
+
+int ALylatBoss::GetScoreAmount()
+{
+	return ScoreAmount;
 }
