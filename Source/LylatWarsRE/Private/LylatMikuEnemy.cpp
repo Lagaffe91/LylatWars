@@ -41,7 +41,7 @@ void ALylatMikuEnemy::SetCooldown(const float& NewCooldown)
 {
 	if(NewCooldown > 0)
 	{ 
-		this->MikuShotCooldown = NewCooldown;
+		this->MikuShotCooldown = NewCooldown + FMath::RandRange(0.f, this->MikuRandomCooldown);
 	}
 }
 

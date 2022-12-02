@@ -23,6 +23,9 @@ public :
 	/**Cooldown between two shots (in seconds)*/
 	UPROPERTY(Category = "Miku", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
 		float MikuShotCooldown = 5;
+	/**Random Cooldown added between two shots (in seconds)*/
+	UPROPERTY(Category = "Miku", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
+		float MikuRandomCooldown = 2;
 
 	UPROPERTY(Category = "Miku", VisibleInstanceOnly, BlueprintReadOnly)
 		float MikuShotTimer = 5;
