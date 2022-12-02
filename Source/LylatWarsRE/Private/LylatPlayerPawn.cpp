@@ -213,6 +213,9 @@ void ALylatPlayerPawn::ActionDash()
 void ALylatPlayerPawn::ActionStopDash()
 {
 	this->IsDashing = false;
+	DashDecelerationTimer = 0;
+	DashMaxSpeedAtteigned = this->PlayerRail->PlayerDashSpeed;
+	DashShouldDecelerate = true;
 }
 
 void ALylatPlayerPawn::ActionResetGyro()
