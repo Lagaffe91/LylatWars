@@ -86,6 +86,55 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Lylat Player|HUD", meta = (ClampMin = "0"))
 		float CrosshairDistance = 20000;
 
+	/**True if the player is dashing*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+		bool IsDashing = false;
+
+	/**Current speed applied on the rail by the dash action*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+		float DashSpeed = 0;
+
+	/**Extra speed given by the dash*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0"))
+		float DashMaxSpeed = 2;
+
+	/**Higer value mean it will reach it's max value quicker*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0"))
+		float DashAcceleration = 1;
+
+	/**Deceleration higher mean quicker lerp after the end of a dash*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0"))
+		float DashDeceleration = 1;
+
+	/**Value between 1 and 0, represent the dash gauge*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+		float DashGauge = 1;
+
+	/**Cost of the dash, higher value mean less dash time*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0"))
+		float DashDrain = 1;
+
+	/**Regeneration of the dash, higher value mean quicker recovery*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0"))
+		float DashRegeneration = 1;
+
+	/**Minial power left in the gauge necessary to start a dash (between 0 and 1)*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash", meta = (ClampMin = "0", ClampMax = "1"))
+		float DashInitialCost = 0.1;
+
+	/**Time (in seconds) the player have been dashing for*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+		float DashTimer = 0;
+
+	/**Time (in seconds) the player have been dashing for*/
+	UPROPERTY(BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+		float DashDecelerationTimer = 0;
+
+	/**Reference to the rail the player is on (null otherwise)*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
+	class ALylatPlayerRail* PlayerRail;
+
+
 	// Sets default values for this pawn's properties
 	ALylatPlayerPawn();
 
@@ -110,9 +159,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionDash();
 
+	void ActionStopDash();
+
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionResetGyro();
 
+	void UpdateDash(float DeltaTime);
 	void UpdateShooting(float DeltaTime);
 	void UpdatePlayer(float DeltaTime);
 	void UpdateCamera(float DeltaTime);

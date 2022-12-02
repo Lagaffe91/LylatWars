@@ -3,6 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
+#include "LylatPlayerRail.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 
@@ -36,6 +37,16 @@ void ALylatPlayerPawn::BeginPlay()
 	resetGyro = true;
 	defaultPlayerPos = EntityMesh->GetRelativeLocation();
 	defaultPlayerRot = EntityMesh->GetRelativeRotation().Euler();
+
+	ALylatPlayerRail* playerRail = (ALylatPlayerRail*)UGameplayStatics::GetActorOfClass(this->GetWorld(), ALylatPlayerRail::StaticClass());
+	if (playerRail)
+	{
+		this->PlayerRail = playerRail;
+	}
+	else
+	{
+		DebugError("failed to grab rail reference", 0);
+	}
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -97,6 +108,56 @@ void ALylatPlayerPawn::ActionShoot()
 {
 	isShooting = true;
 }
+void ALylatPlayerPawn::UpdateDash(float DeltaTime)
+{
+	if(IsDashing)
+	{
+		if (this->DashGauge > 0)
+		{
+			this->DashTimer += DeltaTime;
+			
+			//Acceleration
+			if (this->PlayerRail)
+			{
+				this->PlayerRail->PlayerDashSpeed = FMath::Lerp(0.0f, DashMaxSpeed, this->DashTimer * this->DashAcceleration);
+			}
+			else
+			{
+				DebugError("Dash : Mising player rail reference !", 0);
+			}
+
+			this->DashGauge -= DeltaTime * DashDrain;
+		}
+		else //No more stamina
+		{
+			this->IsDashing = false;
+			DashDecelerationTimer = 0;
+		}
+	}
+	else
+	{
+		if (DashDecelerationTimer < 1)
+		{
+			DashDecelerationTimer += DeltaTime;
+		}
+
+		//Deceleration
+		if (this->PlayerRail)
+		{
+			this->PlayerRail->PlayerDashSpeed = FMath::Lerp(DashMaxSpeed, 0.f, DashDecelerationTimer);
+		}
+		else
+		{
+			DebugError("Dash : Mising player rail reference !", 0);
+		}
+
+		//Reset Dash
+		this->DashTimer = 0;
+
+		//Gauge regeneration
+		this->DashGauge = FMath::Clamp(this->DashGauge+(DeltaTime*DashRegeneration),0.f,1.f);
+	}
+}
 void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 {
 	if (ShootCD > 0.0f || (!isShooting && !isTouched)) return;
@@ -127,7 +188,20 @@ void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 
 void ALylatPlayerPawn::ActionDash()
 {
-	Debug("Dash",0);
+	if (this->DashGauge > this->DashInitialCost)
+	{
+		this->IsDashing = true;
+		Debug("Dash", 0);
+	}
+	else
+	{
+		Debug("Not enough power to dash !", 0);
+	}
+}
+
+void ALylatPlayerPawn::ActionStopDash()
+{
+	this->IsDashing = false;
 }
 
 void ALylatPlayerPawn::ActionResetGyro()
@@ -137,6 +211,8 @@ void ALylatPlayerPawn::ActionResetGyro()
 
 void ALylatPlayerPawn::UpdatePlayer(float DeltaTime)
 {
+	
+
 	SetupBarrelRollAnim(DeltaTime);
 	Velocity = FVector::ZeroVector;
 	PlayerPosition.Y = FMath::Clamp(PlayerPosition.Y, -PlayerPlaneSize.X / 2, PlayerPlaneSize.X / 2);
@@ -204,6 +280,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	UpdateShooting(DeltaTime);
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
+	UpdateDash(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -215,6 +292,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Right", this, &ALylatPlayerPawn::MoveRightInput);
 	PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementGyroInput);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ALylatPlayerPawn::ActionDash);
+	PlayerInputComponent->BindAction("Dash", IE_Released, this, &ALylatPlayerPawn::ActionStopDash);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ALylatPlayerPawn::ActionShoot);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &ALylatPlayerPawn::ActionStopShoot);
 	PlayerInputComponent->BindAction("ResetGyro", IE_Pressed, this, &ALylatPlayerPawn::ActionResetGyro);

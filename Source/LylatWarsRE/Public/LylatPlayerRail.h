@@ -21,7 +21,16 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Player") //Can change speed on the fly
 	bool smartPossess = true;
 
+	/**/
+	UPROPERTY(BlueprintReadOnly, Category = "Generic Rail|Player")
+		bool isDashing = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Generic Rail|Player")
+		float PlayerDashSpeed = 0;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void ComputeRailDistance(float DeltaTime) override;
 };

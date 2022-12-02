@@ -46,21 +46,8 @@ void ALylatGenericRail::Tick(float DeltaTime)
 	}
 	else
 	{
-		railTime += DeltaTime * speedMultiplier * railSpeed;
-		
-		if(RailShouldLoop())	//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
-		{
-			if(SplineComponent->IsClosedLoop())
-			{ 
-				RailLoop();
-			}
-			else
-			{
-				this->RailIsOver = true;
-				this->RailEnded();
-			}
-		}
-
+		ComputeRailDistance(DeltaTime);
+	
 		this->UpdateAllActorsTransform(railTime);
 	}
 }
@@ -162,8 +149,25 @@ void ALylatGenericRail::SpawnActorsOnRail()
 	}
 	else
 	{
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, this->GetName() + TEXT(" : Rail : Spline component is wrong (not created ?)"));
+		Debug("Spline component is wrong (not created ?)", 0);
+	}
+}
+
+void ALylatGenericRail::ComputeRailDistance(float DeltaTime)
+{
+	railTime += DeltaTime * speedMultiplier * railSpeed;
+
+	if (RailShouldLoop())	//May cause problem with loop on rail -> ugly fix : Use end rail event to jump from one classic rail to a looped one....
+	{
+		if (SplineComponent->IsClosedLoop())
+		{
+			RailLoop();
+		}
+		else
+		{
+			this->RailIsOver = true;
+			this->RailEnded();
+		}
 	}
 }
 

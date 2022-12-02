@@ -47,7 +47,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
 		bool RailIsOver = false;
 protected :
-	/*Time ealapsed*/
+	/*Distance on the rail ealapsed*/
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Generic Rail")
 		float railTime = 0; //Bad idea to put this as UPROPERTY()
 
@@ -56,6 +56,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void SpawnActorsOnRail();
+
+	virtual void ComputeRailDistance(float DeltaTime);
 
 public:	
 	// Called every frame
