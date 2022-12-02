@@ -337,7 +337,6 @@ void ALylatPlayerPawn::TakeEntityDamage(AActor* entity)
 void ALylatPlayerPawn::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
 	if (bullet->isPlayerSpawned) return;
-	Debug("Touched bullet", 0);
 	EntityLife--;
 	if (EntityLife <= 0)
 	{

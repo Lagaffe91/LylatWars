@@ -48,6 +48,12 @@ public:
 	/**Current life of the entity*/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		int EntityLife = 0;
+	/**Invulnerability timer*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		float EntityInvulneability = 1.5;
+	/**Invulnerability current timer*/
+	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
+		float EntityCurrentInvulneability = 0.0f;
 
 	/**Type of bullets shot by the entity*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)

@@ -45,7 +45,10 @@ void ALylatEntity::BeginPlay()
 void ALylatEntity::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (EntityCurrentInvulneability > 0.0f)
+	{
+		EntityCurrentInvulneability -= DeltaTime;
+	}
 }
 
 // Called to bind functionality to input
@@ -57,7 +60,7 @@ void ALylatEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor == this || EntityLife <= 0) return;
+	if (OtherActor == this || EntityLife <= 0 || EntityCurrentInvulneability > 0.0f) return;
 	ALylatNormalBullet* bullet = Cast<ALylatNormalBullet>(OtherActor);
 	if (bullet)
 	{
@@ -65,8 +68,8 @@ void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 	else
 	{
-		//Debug("Touched actor %s", *OtherActor->GetName());
 		TakeEntityDamage(OtherActor);
+		EntityCurrentInvulneability = EntityInvulneability;
 	}
 }
 

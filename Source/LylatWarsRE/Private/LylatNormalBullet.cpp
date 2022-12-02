@@ -88,12 +88,13 @@ void ALylatNormalBullet::HitboxBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		ALylatEntity* entity = Cast<ALylatEntity>(OtherActor);
 		if (entity)
 		{
-			if (entity->EntityLife <= 0) return;
+			if (entity->EntityLife <= 0 || entity->EntityCurrentInvulneability > 0.0f) return;
 			ALylatPlayerPawn* player = Cast<ALylatPlayerPawn>(OtherActor);
 			if ((bool)player != isPlayerSpawned)
 			{
 				//Debug("Touched %s, %d", *entity->GetName(), entity->EntityLife);
 				entity->TakeBulletDamage(this);
+				entity->EntityCurrentInvulneability = entity->EntityInvulneability;
 				Destroy();
 			}
 		}
