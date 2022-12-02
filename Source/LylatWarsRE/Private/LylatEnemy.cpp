@@ -28,12 +28,11 @@ void ALylatEnemy::BeginPlay()
 // Called every frame
 void ALylatEnemy::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	
 	this->Animate(DeltaTime);
 
 	if (this->IsActivated)
 	{
+		Super::Tick(DeltaTime);
 		this->Behaviour(DeltaTime);
 	}
 	else

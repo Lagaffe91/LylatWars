@@ -34,14 +34,14 @@ void ALylatMikuEnemy::Animate_Implementation(float DeltaTime)
 
 void ALylatMikuEnemy::ResetShotTimer()
 {
-	this->MikuShotTimer = this->MikuShotCooldown;
+	this->MikuShotTimer = this->MikuShotCooldown + FMath::RandRange(0.f, this->MikuRandomCooldown);
 }
 
 void ALylatMikuEnemy::SetCooldown(const float& NewCooldown)
 {
 	if(NewCooldown > 0)
 	{ 
-		this->MikuShotCooldown = NewCooldown + FMath::RandRange(0.f, this->MikuRandomCooldown);
+		this->MikuShotCooldown = NewCooldown;
 	}
 }
 

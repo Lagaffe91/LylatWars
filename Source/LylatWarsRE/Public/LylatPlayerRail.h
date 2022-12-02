@@ -32,5 +32,5 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void ComputeRailDistance(float DeltaTime) override;
+	virtual void ComputeRailDistance(float DeltaTime, ALylatEntity* Entity) override;
 };

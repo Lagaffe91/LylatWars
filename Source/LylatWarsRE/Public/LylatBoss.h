@@ -39,6 +39,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
+		UStaticMesh* BossBulletMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		FVector BossPosition = FVector(0, 0, 0);
@@ -55,13 +57,15 @@ public:
 		UParticleSystem* FireParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
-		 bool CanFire;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		bool IsAttacking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Range")
 		float AttackRange;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack Range")
+		int FireRate;
+
 
 	void Fire();
 	
@@ -70,6 +74,8 @@ public:
 
 protected:
 	float BulletCooldown;
+	int FireCount;
+	
 
 
 

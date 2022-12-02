@@ -92,3 +92,8 @@ void ALylatEntity::DestroyEntity(bool addScore)
 {
 	Destroy();
 }
+
+void ALylatEntity::RailEnded_Implementation()
+{
+	this->DestroyEntity();
+}

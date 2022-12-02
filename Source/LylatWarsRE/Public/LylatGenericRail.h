@@ -33,23 +33,23 @@ public:
 		float railStartDelay = 0;
 
 	/*Mouvement speed on the rail*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters") //Can change speed on the fly
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters", meta = (ClampMin = "0"))
 		float railSpeed = 1;
 
 	/*"Scale" of the speed. To be multiplied with railSpeed.*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters", meta = (ClampMin = "0")) //Can change speed on the fly
-		int speedMultiplier = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters", meta = (ClampMin = "0"))
+		float speedMultiplier = 100;
 
 	/**If true, will spawn ActorToSpawn on startup*/
 	UPROPERTY(EditAnywhere, Category = "Generic Rail|Parameters")
 		bool SpawnActor = true;
-	/**True if the rail is not active*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
-		bool RailIsOver = false;
-protected :
-	/*Distance on the rail ealapsed*/
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Generic Rail")
-		float railTime = 0; //Bad idea to put this as UPROPERTY()
+
+	/**Delay between spawn of entities*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
+		float SpawnDelay = 0;
+	/**If true, will spawn infinite actors, looping trough the actor list*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
+		bool InifiniteSpawn = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -57,7 +57,7 @@ protected:
 
 	virtual void SpawnActorsOnRail();
 
-	virtual void ComputeRailDistance(float DeltaTime);
+	virtual void ComputeRailDistance(float DeltaTime, ALylatEntity* Entity);
 
 public:	
 	// Called every frame
@@ -72,30 +72,38 @@ public:
 	/**Set rail speed*/
 	UFUNCTION(BlueprintCallable)
 		void SetRailSpeed(const float& NewSpeed);
-	/**Will be called when actors are at the end of the rail*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
-		void RailEnded();
-	void RailEnded_Implementation();
 	/**Return true if the rail is about to loop*/
 	UFUNCTION(BlueprintCallable)
-		bool RailShouldLoop();
+		bool RailShouldLoop(ALylatEntity* Entity);
 	/**Destroy all actors referenced on the rail*/
 	UFUNCTION(BlueprintCallable)
 	void DestroyAllActors();
 	/**Loop code*/
 	UFUNCTION()
-		void RailLoop();
+		void RailLoop(ALylatEntity* Entity);
+	/**Spawn the next entity from the ActorsToSpawn list*/
+	UFUNCTION(BlueprintCallable)
+		void SpawnNextEntity();
+	/**Spawn one entity on the rail*/
+	UFUNCTION(BlueprintCallable)
+		void SpawnEntity(ALylatEntity* Entity);
 
 private :
 	void InitRail();
 	
 	void ComputeEnityMeshTransform(ALylatEntity* Entity);
 
-	void UpdateActorTransform(TSubclassOf<ALylatEntity> Actor, const float& Time);
-	void UpdateActorTransform(ALylatEntity*Actor, const float& Time);
-	void UpdateAllActorsTransform(const float& Time);
+	void UpdateActorTransform(TSubclassOf<ALylatEntity> Entity, const float& DeltaTime);
+	void UpdateActorTransform(ALylatEntity* Entity, const float& DeltaTime);
+	
+		void UpdateAllActorsTransform(const float& DeltaTime);
 
+	void UpdateEntitySpawning(float DeltaTime);
+
+	bool ShouldSpawn();
 
 private :
+	float SpawnTimer = 0;
+	int NextEntityIndex = 0;
 	bool ActorsAreSpawned = false;
 };

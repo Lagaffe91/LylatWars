@@ -14,10 +14,11 @@
 ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	CanFire = false;
 	IsAttacking = false;
 	BulletCooldown = 0.0f;
 	AttackRange = 2000.0f;
+	FireCount = 0;
+	FireRate = 50;
 
 }
 
@@ -33,20 +34,15 @@ void ALylatBoss::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	BulletCooldown -= DeltaTime;
 
-	if (EntityLife > 0.0f)
-	{
-		BossShoot();
 
-		if (CanFire)
-			Fire();
-	}
+	if (EntityLife > 0.0f)
+		BossShoot();
 }
 
 // Called to bind functionality to input
 void ALylatBoss::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ALylatBoss::BasicMovement(float deltaTime)
@@ -69,6 +65,7 @@ void ALylatBoss::Fire()
 
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
+#if 0
 	if (bullet->isPlayerSpawned)
 	{
 		EntityLife--;
@@ -76,6 +73,10 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 
 	if (EntityLife <= 0.0f)
 		DestroyEntity();
+#endif
+
+	ALylatEntity::TakeBulletDamage(bullet);
+
 }
 
 
@@ -96,14 +97,18 @@ void ALylatBoss::BossShoot()
 			ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
 			if (Projectile)
 			{
-				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->BulletSpawnPosition->GetComponentLocation();
+				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
 				LaunchDirection.Normalize();
+				if (BossBulletMesh)
+					Projectile->SetBulletMesh(BossBulletMesh);
 				Projectile->FireInDirection(LaunchDirection, this);
-
+				FireCount++;
 			}
 
-			BulletCooldown = 0.5f;
+			if (!(FireCount % FireRate))
+				Fire();
 
+			BulletCooldown = 0.6f;
 		}
 
 	}
