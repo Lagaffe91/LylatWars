@@ -137,7 +137,7 @@ void ALylatGenericRail::UpdateActorTransform(ALylatEntity* Entity, const float& 
 	{
 		this->ComputeRailDistance(DeltaTime, Entity);
 		FTransform NewTranform = this->SplineComponent->GetTransformAtDistanceAlongSpline(Entity->EntityRailDistance, ESplineCoordinateSpace::World);
-		Entity->SetActorTransform(NewTranform);
+		Entity->SetActorTransform(NewTranform, false, nullptr, ETeleportType::None);
 	}
 	else
 	{
