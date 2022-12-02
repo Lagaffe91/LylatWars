@@ -186,6 +186,7 @@ protected:
 	FVector2D touchLast;
 	FVector2D touchCurrent;
 	FVector2D touchVel;
+	FVector2D gyroInput;
 	FVector oldDir;
 	FVector defaultPlayerPos;
 	FVector defaultPlayerRot;

@@ -37,6 +37,7 @@ void ALylatPlayerPawn::BeginPlay()
 	resetGyro = true;
 	defaultPlayerPos = EntityMesh->GetRelativeLocation();
 	defaultPlayerRot = EntityMesh->GetRelativeRotation().Euler();
+	gyroInput = FVector2D::ZeroVector;
 
 	ALylatPlayerRail* playerRail = (ALylatPlayerRail*)UGameplayStatics::GetActorOfClass(this->GetWorld(), ALylatPlayerRail::StaticClass());
 	if (playerRail)
@@ -61,9 +62,11 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 
 void ALylatPlayerPawn::MovementGyroInput(FVector value)
 {
+	Debug("Gyro: %.2f %.2f %.2f", value.X, value.Y, value.Z);
 	if (resetGyro)
 	{
 		defaultRotation = FQuat::MakeFromEuler(value).Inverse();
+		gyroInput = FVector2D::ZeroVector;
 		resetGyro = false;
 	}
 	else
@@ -74,8 +77,12 @@ void ALylatPlayerPawn::MovementGyroInput(FVector value)
 		if (tmp > 0.1f && tmp < 3.0f)
 		{
 			FVector axis = deltaRotation.GetForwardVector();
-			Velocity.Y += axis.Y * PlayerMaxSpeed * 70.0f;
-			Velocity.Z += axis.Z * PlayerMaxSpeed * -70.0f;
+			gyroInput.Y = axis.Y * PlayerMaxSpeed * 70.0f;
+			gyroInput.X = axis.Z * PlayerMaxSpeed * -70.0f;
+		}
+		else
+		{
+			gyroInput = FVector2D::ZeroVector;
 		}
 	}
 }
@@ -256,7 +263,7 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 		if (touchVel.X > 2000.0f) ActionBarrelRoll(false);
 		else if (touchVel.X < -2000.0f) ActionBarrelRoll(true);
 	}
-	Velocity = Velocity.GetClampedToMaxSize(PlayerMaxSpeed);
+	Velocity = (FVector(0, gyroInput.Y, gyroInput.X) + Velocity).GetClampedToMaxSize(PlayerMaxSpeed);
 	BarrelRollCD -= DeltaTime;
 	ShootCD -= DeltaTime;
 	PlayerPosition += Velocity * DeltaTime;
