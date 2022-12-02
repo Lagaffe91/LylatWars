@@ -62,7 +62,7 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 
 void ALylatPlayerPawn::MovementGyroInput(FVector value)
 {
-	Debug("Gyro: %.2f %.2f %.2f", value.X, value.Y, value.Z);
+	//Debug("Gyro: %.2f %.2f %.2f", value.X, value.Y, value.Z);
 	if (resetGyro)
 	{
 		defaultRotation = FQuat::MakeFromEuler(value).Inverse();
@@ -202,6 +202,7 @@ void ALylatPlayerPawn::ActionBarrelRoll(bool reversed)
 	barrelReversed = reversed;
 	BarrelRollAnim = BarrelRollSpeed;
 	BarrelRollCD = BarrelRollCooldown;
+	EntityCurrentInvulneability = BarrelRollSpeed;
 }
 
 void ALylatPlayerPawn::ActionDash()
@@ -275,7 +276,6 @@ void ALylatPlayerPawn::SetupBarrelRollAnim(float DeltaTime)
 	if (BarrelRollAnim <= 0.0f)
 	{
 		PlayerRotation.X = 0;
-		EntityHitbox->SetActive(true);
 	}
 	else
 	{

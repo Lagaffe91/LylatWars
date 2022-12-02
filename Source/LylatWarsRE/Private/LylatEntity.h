@@ -57,7 +57,7 @@ public:
 
 	/**Distance on the rail*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
-		int EntityRailDistance = 0;
+		float EntityRailDistance = 0;
 	/**True if entity is on a rail*/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		bool EntityIsOnARail = false;
