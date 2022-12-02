@@ -190,6 +190,10 @@ protected:
 	FVector defaultPlayerRot;
 	FQuat defaultRotation;
 
+	/**Security to avoid weird deceleration behaviour*/
+	bool DashShouldDecelerate = false;
+	float DashMaxSpeedAtteigned = 0;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

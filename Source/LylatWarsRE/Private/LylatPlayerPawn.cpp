@@ -132,25 +132,34 @@ void ALylatPlayerPawn::UpdateDash(float DeltaTime)
 		{
 			this->IsDashing = false;
 			DashDecelerationTimer = 0;
+			DashMaxSpeedAtteigned = this->PlayerRail->PlayerDashSpeed;
+			DashShouldDecelerate = true;
 		}
 	}
 	else
 	{
-		if (DashDecelerationTimer < 1)
+		if (DashShouldDecelerate)
 		{
-			DashDecelerationTimer += DeltaTime;
-		}
+			if (DashDecelerationTimer < 1)
+			{
+				DashDecelerationTimer += DeltaTime;
+			}
 
-		//Deceleration
-		if (this->PlayerRail)
-		{
-			this->PlayerRail->PlayerDashSpeed = FMath::Lerp(DashMaxSpeed, 0.f, DashDecelerationTimer);
-		}
-		else
-		{
-			DebugError("Dash : Mising player rail reference !", 0);
-		}
+			//Deceleration
+			if (this->PlayerRail)
+			{
+				this->PlayerRail->PlayerDashSpeed = FMath::Lerp(DashMaxSpeedAtteigned, 0.f, DashDecelerationTimer);
+			}
+			else
+			{
+				DebugError("Dash : Mising player rail reference !", 0);
+			}
 
+			if (this->PlayerRail->PlayerDashSpeed <= 0)
+			{
+				DashShouldDecelerate = false;
+			}
+		}
 		//Reset Dash
 		this->DashTimer = 0;
 
