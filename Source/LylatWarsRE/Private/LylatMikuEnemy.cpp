@@ -3,9 +3,7 @@
 
 #include "LylatMikuEnemy.h"
 
-#include "LylatHomingBullet.h" //Wrong include
 #include "LylatPlayerPawn.h"
-
 #include "DebugString.h"
 
 ALylatMikuEnemy::ALylatMikuEnemy()
