@@ -228,6 +228,6 @@ void ALylatGenericRail::SpawnEntity(ALylatEntity* Entity)
 	else
 	{
 		this->ActorsOnRail.Add(EntityPtr);
-		Debug("Actord spawned :%s ", *EntityPtr->GetName());
+		//Debug("Actord spawned :%s ", *EntityPtr->GetName());
 	}
 }

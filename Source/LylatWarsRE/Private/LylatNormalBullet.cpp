@@ -25,7 +25,7 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 	BulletMovement->InitialSpeed = BulletSpeed;
 	BulletMovement->MaxSpeed = BulletSpeed;
 	BulletMovement->bRotationFollowsVelocity = true;
-	BulletMovement->bShouldBounce = true;
+	BulletMovement->bShouldBounce = false;
 	BulletMovement->Bounciness = 0.3f;
 	BulletMovement->ProjectileGravityScale = 0.0f;
 	RootComponent = CollisionComponent;

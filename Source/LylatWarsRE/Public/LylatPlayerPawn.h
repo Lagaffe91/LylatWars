@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "LylatNormalBullet.h"
+#include "LylatBombBullet.h"
 
 #include "LylatEntity.h"
 #include "LylatPlayerPawn.generated.h"
@@ -17,11 +18,10 @@ class LYLATWARSRE_API ALylatPlayerPawn : public ALylatEntity
 public:
 	UPROPERTY(Category = "Lylat Player", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UStaticMeshComponent* PlayerTrailMesh;
-	/** Btw why do we have a PlayerBulletMesh ? */
-	UPROPERTY(Category = "Lylat Player|Bullet", EditDefaultsOnly)
-		class UStaticMesh* PlayerBulletMesh = nullptr;
+	
 	UPROPERTY(Category = "Lylat Player|Camera", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UCameraComponent* Camera;
+
 
 	/** Current camera relative position */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Camera")
@@ -38,6 +38,18 @@ public:
 	/** The ratio between the center of the screen and the player position when the player moves */
 	UPROPERTY(EditAnywhere, Category = "Lylat Player|Camera")
 		float CameraFollowRatio = 0.75f;
+
+	/**Bomb shot by the player, aka the nuke, aka the big boom, aka the thing that does quite a lot of damage*/
+	UPROPERTY(Category = "Lylat Player|Weapons", EditAnywhere, BlueprintReadOnly)
+		TSubclassOf<ALylatBombBullet> BombBulletType;
+
+	/** The amount of bombs (nukes) the player has at most*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Weapons", meta = (ClampMin = "0"))
+		int BombMaxCount = 3;
+
+	/** The current amount of bombs the current player currently has in its current inventory*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Lylat Player|Weapons", meta = (ClampMin = "0"))
+		int BombCount = 3;
 
 	/** Current player relative position */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement")
@@ -164,6 +176,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionResetGyro();
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void ActionUseBomb();
 
 	void UpdateDash(float DeltaTime);
 	void UpdateShooting(float DeltaTime);

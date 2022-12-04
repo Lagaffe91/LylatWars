@@ -115,6 +115,27 @@ void ALylatPlayerPawn::ActionShoot()
 {
 	isShooting = true;
 }
+void ALylatPlayerPawn::ActionUseBomb()
+{
+	if (BombCount > BombMaxCount) BombCount = BombMaxCount;
+	if (BombCount <= 0) return;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	FVector Location = BulletSpawnPosition->GetComponentLocation();
+	FRotator Rotation = PlayerRotation.Rotation();
+	ALylatBombBullet* Projectile = GetWorld()->SpawnActor<ALylatBombBullet>(BombBulletType, Location, Rotation, SpawnParams);
+	if (Projectile)
+	{
+		// Set the projectile's initial trajectory.
+		FVector LaunchDirection = EntityMesh->GetForwardVector();
+		Projectile->FireInDirection(LaunchDirection, this, true);
+	}
+	BombCount--;
+}
+
 void ALylatPlayerPawn::UpdateDash(float DeltaTime)
 {
 	if(IsDashing)
@@ -189,10 +210,6 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 		// Set the projectile's initial trajectory.
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this, true);
-		if (PlayerBulletMesh)
-		{
-			Projectile->SetBulletMesh(PlayerBulletMesh);
-		}
 	}
 	ShootCD = ShootCooldown;
 }
