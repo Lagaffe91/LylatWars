@@ -20,4 +20,5 @@ public :
 
 	void Animate_Implementation(float DeltaTime) override;
 
+	virtual int GetScoreAmount() override;
 };

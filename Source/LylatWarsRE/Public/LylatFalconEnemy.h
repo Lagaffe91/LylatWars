@@ -37,6 +37,8 @@ public :
 
 	void Animate_Implementation(float DeltaTime);
 
+	virtual int GetScoreAmount() override;
+
 private :
 	void DoBarrelRoll(float DeltaTime);
 	void ResetRollCooldown();

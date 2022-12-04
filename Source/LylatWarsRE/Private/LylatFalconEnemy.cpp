@@ -54,3 +54,8 @@ void ALylatFalconEnemy::ResetRollCooldown()
 	this->AnimationTimer = 0;
 	this->FalconRollTimer = this->FalconRollCooldown + FMath::RandRange(0, this->FalcomRandomCooldown);
 }
+
+int ALylatFalconEnemy::GetScoreAmount()
+{
+	return 400;
+}

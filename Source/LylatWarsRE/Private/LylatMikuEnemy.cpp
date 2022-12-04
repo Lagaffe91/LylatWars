@@ -64,5 +64,5 @@ void ALylatMikuEnemy::ShootBullet()
 
 int ALylatMikuEnemy::GetScoreAmount()
 {
-	return 100;
+	return 300;
 }

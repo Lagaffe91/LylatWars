@@ -89,7 +89,7 @@ void ALylatJeffEnemy::ShootBullet()
 
 int ALylatJeffEnemy::GetScoreAmount()
 {
-	return 300;
+	return 200;
 }
 
 void ALylatJeffEnemy::UpdateQuat()
