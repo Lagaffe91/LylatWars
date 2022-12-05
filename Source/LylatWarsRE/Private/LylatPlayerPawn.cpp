@@ -227,11 +227,6 @@ void ALylatPlayerPawn::ActionDash()
 	if (this->DashGauge > this->DashInitialCost)
 	{
 		this->IsDashing = true;
-		Debug("Dash", 0);
-	}
-	else
-	{
-		Debug("Not enough power to dash !", 0);
 	}
 }
 
@@ -353,12 +348,14 @@ void ALylatPlayerPawn::ComputeCrosshairPosition()
 
 void ALylatPlayerPawn::TakeEntityDamage(AActor* entity)
 {
-	Super::TakeEntityDamage(entity);
 	if (Cast<ALylatEntity>(entity))
-		EntityLife--;
-	if (EntityLife <= 0)
 	{
-		DestroyEntity();
+		EntityLife--;
+		Super::TakeEntityDamage(entity);
+		if (EntityLife <= 0)
+		{
+			DestroyEntity();
+		}
 	}
 }
 

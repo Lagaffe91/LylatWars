@@ -26,7 +26,7 @@ ALylatEventTrigger::ALylatEventTrigger()
 void ALylatEventTrigger::BeginPlay()
 {
 	Super::BeginPlay();
-	Debug("BeginPlay");
+	//Debug("BeginPlay");
 	
 	EventHitbox->OnComponentBeginOverlap.AddDynamic(this, &ALylatEventTrigger::HitboxBeginOverlap);
 }

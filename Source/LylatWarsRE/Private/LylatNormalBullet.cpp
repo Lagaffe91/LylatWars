@@ -2,6 +2,7 @@
 #include "LylatEntity.h"
 #include "DebugString.h"
 #include "LylatPlayerPawn.h"
+#include "LylatEventTrigger.h"
 
 // Sets default values
 ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializer)
@@ -100,8 +101,9 @@ void ALylatNormalBullet::HitboxBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		}
 		else
 		{
+			ALylatEventTrigger* trigger = Cast<ALylatEventTrigger>(OtherActor);
+			if (trigger) return;
 			Destroy();
-			//Debug("Touched anything", 0);
 		}
 	}
 }
