@@ -15,23 +15,11 @@ ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	BombSpawner1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BombSpawner1"));
-	BombSpawner1->SetupAttachment(EntityMesh);
-
-	BombSpawner2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BombSpawner2"));
-	BombSpawner2->SetupAttachment(EntityMesh);
-
 	Bomb1SpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("Bomb1Spawn"));
-	Bomb1SpawnPosition->SetupAttachment(BombSpawner1);
+	Bomb1SpawnPosition->SetupAttachment(EntityMesh);
 
 	Bomb2SpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("Bomb2Spawn"));
-	Bomb2SpawnPosition->SetupAttachment(BombSpawner2);
-
-	BombSpawnerCollision1 = CreateDefaultSubobject<UBoxComponent>(TEXT("Bomb1SpawnerCollision"));
-	BombSpawnerCollision1->SetupAttachment(BombSpawner1);
-
-	BombSpawnerCollision2 = CreateDefaultSubobject<UBoxComponent>(TEXT("Bomb2SpawnerCollision"));
-	BombSpawnerCollision2->SetupAttachment(BombSpawner2);
+	Bomb2SpawnPosition->SetupAttachment(EntityMesh);
 
 	BulletCooldown = 0.0f;
 	FireCount = 0;
@@ -83,10 +71,21 @@ void ALylatBoss::Fire()
 
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
+	TArray<AActor *> childActors;
+	GetAllChildActors(childActors);
+
+	for (auto child : childActors)
+	{
+		if (!child->IsActorBeingDestroyed())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, child->GetName());
+			return;
+		}
+	}
+
 	FVector Scale = EntityMesh->GetComponentScale();
 
 	Scale -= FVector(ScaleDamage, ScaleDamage, ScaleDamage);
-
 
 	if(EntityMesh->GetComponentScale().GetAbsMin() >= ScaleDamage  * 2)
 		this->EntityMesh->SetWorldScale3D(Scale);

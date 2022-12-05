@@ -41,14 +41,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
-		class UStaticMeshComponent* BombSpawner1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
-		class UStaticMeshComponent* BombSpawner2;
-	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent* BombSpawnerCollision1;
-	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
-		class UBoxComponent * BombSpawnerCollision2;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
 		class UArrowComponent* Bomb1SpawnPosition;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
