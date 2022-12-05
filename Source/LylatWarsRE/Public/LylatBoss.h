@@ -69,16 +69,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
 		int FireRate = 50;
 
-	UPROPERTY(Category = "Boss Score Amount", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "500"))
-		int ScoreAmount = 1000;
-
-
 	void Fire();
 	
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
-
-	virtual int GetScoreAmount() override;
 
 
 protected:

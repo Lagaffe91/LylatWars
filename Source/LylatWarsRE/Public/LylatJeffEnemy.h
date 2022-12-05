@@ -73,8 +73,6 @@ public:
 
 	virtual void ShootBullet() override;
 
-	virtual int GetScoreAmount() override;
-
 	void UpdateQuat();
 protected:
 	FQuat invRotation;

@@ -23,6 +23,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	TArray<UStaticMeshComponent*> meshes;
 
 public:	
 	// Called every frame
@@ -35,12 +36,20 @@ public:
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UStaticMeshComponent* EntityMesh;
 
+	/**Material used for the damage animation*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		class UMaterialInterface* DamageMaterial;
+
 	/**UBoxComponent representing the hitbox of the entity**/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UBoxComponent* EntityHitbox;
 	/**Location of spawning bullets **/
 	UPROPERTY(Category = "Lylat Entity", VisibleAnywhere, BlueprintReadOnly)
 		class UArrowComponent* BulletSpawnPosition;
+
+	/**Amount of points dropped by the entity*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		int EntityScoreValue = 0;
 
 	/**Max life of the entity*/
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "1"))
@@ -84,4 +93,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
 		void RailEnded();
 	void RailEnded_Implementation();
+
+	/**Will be called when the entity takes a hit*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")
+		void TakeDamageEvent();
+	void TakeDamageEvent_Implementation();
+
+	/**Will be called at the end of the invulnerability timer*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")
+		void EndDamageEvent();
+	void EndDamageEvent_Implementation();
 };

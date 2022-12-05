@@ -126,8 +126,3 @@ void ALylatBoss::BossShoot()
 
 	}
 }
-
-int ALylatBoss::GetScoreAmount()
-{
-	return ScoreAmount;
-}

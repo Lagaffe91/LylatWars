@@ -13,8 +13,3 @@ void ALylatAdoEnemy::Behaviour_Implementation(float DeltaTime)
 {
 	//Do nothing ?
 }
-
-int ALylatAdoEnemy::GetScoreAmount()
-{
-	return 100;
-}

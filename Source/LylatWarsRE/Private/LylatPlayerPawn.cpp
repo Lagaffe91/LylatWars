@@ -353,6 +353,7 @@ void ALylatPlayerPawn::ComputeCrosshairPosition()
 
 void ALylatPlayerPawn::TakeEntityDamage(AActor* entity)
 {
+	Super::TakeEntityDamage(entity);
 	if (Cast<ALylatEntity>(entity))
 		EntityLife--;
 	if (EntityLife <= 0)
@@ -365,6 +366,7 @@ void ALylatPlayerPawn::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
 	if (bullet->isPlayerSpawned) return;
 	EntityLife--;
+	TakeDamageEvent();
 	if (EntityLife <= 0)
 	{
 		DestroyEntity();

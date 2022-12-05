@@ -5,6 +5,7 @@
 
 #include "DebugString.h"
 #include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "LylatNormalBullet.h"
 #include "LylatPlayerPawn.h"
 
@@ -39,6 +40,15 @@ void ALylatEntity::BeginPlay()
 	EntityHitbox->SetCollisionResponseToAllChannels(ECR_Overlap);
 	EntityHitbox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ALylatEntity::HitboxBeginOverlap);
 	EntityLife = EntityMaxLife;
+	auto comps = GetComponents();
+	for (UActorComponent* element : comps)
+	{
+		UStaticMeshComponent* mesh = Cast<UStaticMeshComponent>(element);
+		if (mesh)
+		{
+			meshes.Add(mesh);
+		}
+	}
 }
 
 // Called every frame
@@ -48,6 +58,10 @@ void ALylatEntity::Tick(float DeltaTime)
 	if (EntityCurrentInvulneability > 0.0f)
 	{
 		EntityCurrentInvulneability -= DeltaTime;
+		if (EntityCurrentInvulneability <= 0.0f)
+		{
+			EndDamageEvent();
+		}
 	}
 }
 
@@ -77,6 +91,7 @@ void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
 	if (!bullet->isPlayerSpawned) return;
 	//Debug("Touched bullet", 0);
+	TakeDamageEvent();
 	EntityLife--;
 	if (EntityLife <= 0)
 	{
@@ -86,14 +101,48 @@ void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
 
 void ALylatEntity::TakeEntityDamage(AActor* entity)
 {
+	TakeDamageEvent();
 }
 
 void ALylatEntity::DestroyEntity(bool addScore)
 {
+	ALylatGameMode* GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (addScore)
+	{
+		if (GameMode)
+		{
+			GameMode->AddScore(EntityScoreValue);
+		}
+		else
+		{
+			DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings", 0);
+		}
+	}
 	Destroy();
 }
 
 void ALylatEntity::RailEnded_Implementation()
 {
 	this->DestroyEntity(false);
+}
+
+void ALylatEntity::TakeDamageEvent_Implementation()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		for (int32 i = 0; i < mesh->GetNumMaterials(); i++)
+		{
+			mesh->OverrideMaterials.Add(DamageMaterial);
+		}
+		mesh->MarkRenderStateDirty();
+	}
+}
+
+void ALylatEntity::EndDamageEvent_Implementation()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		mesh->OverrideMaterials.Empty();
+		mesh->MarkRenderStateDirty();
+	}
 }

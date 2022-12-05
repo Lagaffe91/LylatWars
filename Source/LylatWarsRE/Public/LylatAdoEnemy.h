@@ -19,6 +19,4 @@ public :
 	void Behaviour_Implementation(float DeltaTime)	override;
 
 	void Animate_Implementation(float DeltaTime) override;
-
-	virtual int GetScoreAmount() override;
 };

@@ -87,11 +87,6 @@ void ALylatJeffEnemy::ShootBullet()
 	}
 }
 
-int ALylatJeffEnemy::GetScoreAmount()
-{
-	return 200;
-}
-
 void ALylatJeffEnemy::UpdateQuat()
 {
 	invRotation = RootComponent->GetComponentQuat().Inverse();

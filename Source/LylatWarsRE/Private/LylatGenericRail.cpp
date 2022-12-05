@@ -147,15 +147,15 @@ void ALylatGenericRail::UpdateActorTransform(ALylatEntity* Entity, const float& 
 
 void ALylatGenericRail::UpdateAllActorsTransform(const float& DeltaTime)
 {
-	for (ALylatEntity* Actor : ActorsOnRail)
+	for (int32 i = ActorsOnRail.Num() - 1; i >= 0; i--)
 	{
-		if (Actor)
+		if (ActorsOnRail[i])
 		{
-			UpdateActorTransform(Actor, DeltaTime);
+			UpdateActorTransform(ActorsOnRail[i], DeltaTime);
 		}
 		else
 		{
-			ActorsOnRail.Remove(Actor);
+			ActorsOnRail.RemoveAt(i, 1, false);
 		}
 	}
 }

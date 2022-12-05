@@ -55,11 +55,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Lylat Enemy|Events")
 		virtual void ShootBullet() { Debug("This enemy cant shoot !",0); };
 
-	UFUNCTION()
-		virtual int GetScoreAmount();
-
-	virtual void DestroyEntity(bool addScore = true) override;
-
 
 private : 
 	bool shouldUpdateDelay = false;
