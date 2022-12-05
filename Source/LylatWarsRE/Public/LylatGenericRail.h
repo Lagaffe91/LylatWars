@@ -79,7 +79,7 @@ public:
 		bool RailShouldLoop(ALylatEntity* Entity);
 	/**Destroy all actors referenced on the rail*/
 	UFUNCTION(BlueprintCallable)
-	void DestroyAllActors();
+		void DestroyAllActors();
 	/**Loop code*/
 	UFUNCTION()
 		void RailLoop(ALylatEntity* Entity);
@@ -94,6 +94,10 @@ public:
 		void Activate() { this->IsActivated = true; }
 	UFUNCTION(BlueprintCallable)
 		void Deactivate() { this->IsActivated = false; }
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void Event_EntityEndRail();
+	void Event_EntityEndRail_Implementation() {};
 
 private :
 	void InitRail();

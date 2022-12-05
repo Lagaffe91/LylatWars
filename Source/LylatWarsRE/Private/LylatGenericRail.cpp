@@ -127,6 +127,7 @@ void ALylatGenericRail::ComputeRailDistance(float DeltaTime, ALylatEntity* Entit
 		}
 		else
 		{
+			this->Event_EntityEndRail();
 			Entity->RailEnded();
 		}
 	}
