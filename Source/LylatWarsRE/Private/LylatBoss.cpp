@@ -14,9 +14,6 @@
 ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
-#if 0
-	IsAttacking = false;
-#endif
 
 	BulletCooldown = 0.0f;
 	FireCount = 0;
@@ -39,9 +36,6 @@ void ALylatBoss::Tick(float DeltaTime)
 	if (EntityLife > 0.0f)
 	{
 		BossShoot();
-
-		if (!(FireCount % FireRate))
-			Fire();
 	}
 
 }
@@ -63,31 +57,23 @@ void ALylatBoss::Fire()
 #if 0
 	
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireParticle, this->EntityMesh->GetComponentLocation(), FRotator::ZeroRotator, true);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIREEEEEEE !!")));
 #endif
 
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIREEEEEEE !!")));
+
+
 }
 
 
 
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
-#if 0
-	if (bullet->isPlayerSpawned)
-	{
-		EntityLife--;
-	}
-
-	if (EntityLife <= 0.0f)
-		DestroyEntity();
-#endif
-
 	FVector Scale = EntityMesh->GetComponentScale();
 
-	Scale -= FVector(0.05f, 0.05f, 0.05f);
+	Scale -= FVector(ScaleDamage, ScaleDamage, ScaleDamage);
 
 
-	if(EntityMesh->GetComponentScale().GetAbsMin() >= 0.1f)
+	if(EntityMesh->GetComponentScale().GetAbsMin() >= ScaleDamage  * 2)
 		this->EntityMesh->SetWorldScale3D(Scale);
 
 	ALylatEntity::TakeBulletDamage(bullet);
@@ -115,9 +101,19 @@ void ALylatBoss::BossShoot()
 				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
 				LaunchDirection.Normalize();
 
-				if (BossBulletMesh)
-					Projectile->SetBulletMesh(BossBulletMesh);
-				Projectile->FireInDirection(LaunchDirection, this);
+				if (!(FireCount % FireRate))
+				{
+					if (BossBombMesh)
+						Projectile->SetBulletMesh(BossBombMesh);
+					Projectile->FireInDirection(LaunchDirection, this);
+				}
+				else
+				{
+					if (BossBulletMesh)
+						Projectile->SetBulletMesh(BossBulletMesh);
+					Projectile->FireInDirection(LaunchDirection, this);
+				}
+
 				FireCount++;
 			}
 

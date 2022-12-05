@@ -42,6 +42,9 @@ public:
 	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
 		UStaticMesh* BossBulletMesh = nullptr;
 
+	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
+		UStaticMesh* BossBombMesh = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		FVector BossPosition = FVector(0, 0, 0);
 
@@ -56,18 +59,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "FireParticle")
 		UParticleSystem* FireParticle;
 
-#if 0
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attack")
-		bool IsAttacking;
-#endif
-
 	UPROPERTY(Category = "Attack Range",EditAnywhere, BlueprintReadOnly)
 		float AttackRange = 2000.0f;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
-		int FireRate = 50;
+		int FireRate = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss Scale Damage")
+		float ScaleDamage = 0.05f;
 
 	void Fire();
 	

@@ -50,6 +50,8 @@ public:
 	/**If true, will spawn infinite actors, looping trough the actor list*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
 		bool InifiniteSpawn = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Rail|Parameters")
+		bool IsActivated = true;
 
 protected:
 	// Called when the game starts or when spawned
@@ -87,6 +89,11 @@ public:
 	/**Spawn one entity on the rail*/
 	UFUNCTION(BlueprintCallable)
 		void SpawnEntity(ALylatEntity* Entity);
+
+	UFUNCTION(BlueprintCallable)
+		void Activate() { this->IsActivated = true; }
+	UFUNCTION(BlueprintCallable)
+		void Deactivate() { this->IsActivated = false; }
 
 private :
 	void InitRail();

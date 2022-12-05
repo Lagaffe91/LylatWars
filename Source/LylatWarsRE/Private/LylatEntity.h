@@ -83,14 +83,14 @@ public:
 	UFUNCTION()
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void TakeEntityDamage(AActor* entity);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void DestroyEntity(bool addScore = true);
 
-	/**Will be called when actors are at the end of the rail*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Generic Rail|Events")
+	/**if the entity is on a rail, Will be called when entity is at the end of the rail*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")
 		void RailEnded();
 	void RailEnded_Implementation();
 
@@ -103,4 +103,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")
 		void EndDamageEvent();
 	void EndDamageEvent_Implementation();
+
+	/**Will be called when entity is destoryed*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")
+		void OnDestroy();
+	void OnDestroy_Implementation() {};
 };

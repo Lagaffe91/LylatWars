@@ -118,6 +118,7 @@ void ALylatEntity::DestroyEntity(bool addScore)
 			DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings", 0);
 		}
 	}
+	this->OnDestroy();
 	Destroy();
 }
 
