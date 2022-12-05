@@ -15,9 +15,26 @@ ALylatBoss::ALylatBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	BombSpawner1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BombSpawner1"));
+	BombSpawner1->SetupAttachment(EntityMesh);
+
+	BombSpawner2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BombSpawner2"));
+	BombSpawner2->SetupAttachment(EntityMesh);
+
+	Bomb1SpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("Bomb1Spawn"));
+	Bomb1SpawnPosition->SetupAttachment(BombSpawner1);
+
+	Bomb2SpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("Bomb2Spawn"));
+	Bomb2SpawnPosition->SetupAttachment(BombSpawner2);
+
+	BombSpawnerCollision1 = CreateDefaultSubobject<UBoxComponent>(TEXT("Bomb1SpawnerCollision"));
+	BombSpawnerCollision1->SetupAttachment(BombSpawner1);
+
+	BombSpawnerCollision2 = CreateDefaultSubobject<UBoxComponent>(TEXT("Bomb2SpawnerCollision"));
+	BombSpawnerCollision2->SetupAttachment(BombSpawner2);
+
 	BulletCooldown = 0.0f;
 	FireCount = 0;
-
 }
 
 // Called when the game starts or when spawned
@@ -32,12 +49,12 @@ void ALylatBoss::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	BulletCooldown -= DeltaTime;
 
-
-	if (EntityLife > 0.0f)
+	if (EntityLife <= 0)
+		Destroy();
+	else if (BulletCooldown <= 0.0f)
 	{
 		BossShoot();
 	}
-
 }
 
 // Called to bind functionality to input
@@ -64,8 +81,6 @@ void ALylatBoss::Fire()
 
 }
 
-
-
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 {
 	FVector Scale = EntityMesh->GetComponentScale();
@@ -83,22 +98,35 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 
 void ALylatBoss::BossShoot()
 {
-	if (BulletCooldown <= 0.0f)
-	{
-
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
 
-		float distanceToTarget = FVector::DistSquared(PlayerReference->PlayerPosition, BossPosition);
+		BossPosition = GetActorLocation();
+		float distanceToTarget = FVector::DistSquared(PlayerReference->GetActorLocation(), BossPosition);
 		if (distanceToTarget <= AttackRange * AttackRange)
 		{
 			FVector Location = BulletSpawnPosition->GetComponentLocation();
+
+			if (!(FireCount % FireRate))
+			{
+				if (BombTurn)
+				{
+					Location = Bomb1SpawnPosition->GetComponentLocation();
+					BombTurn = !BombTurn;
+				}
+				else
+				{
+					Location = Bomb2SpawnPosition->GetComponentLocation();
+					BombTurn = !BombTurn;
+				}
+			}
 			FRotator Rotation = BossRotation.Rotation();
 			ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+
 			if (Projectile)
 			{
-				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
+				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - Location;
 				LaunchDirection.Normalize();
 
 				if (!(FireCount % FireRate))
@@ -116,9 +144,6 @@ void ALylatBoss::BossShoot()
 
 				FireCount++;
 			}
-
-			BulletCooldown = 0.6f;
 		}
-
-	}
+		BulletCooldown = 0.6f;
 }

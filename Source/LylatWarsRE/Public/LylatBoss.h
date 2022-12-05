@@ -8,7 +8,7 @@
 #include "LylatWeakPoint.h"
 
 #include "Particles/ParticleSystem.h"
-
+#include "Engine/TriggerBox.h"
 
 #include "LylatEnemy.h"
 #include "LylatBoss.generated.h"
@@ -26,6 +26,8 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
+
+	bool BombTurn = false;
 	float Speed = 500.0f;
 	virtual void BeginPlay() override;
 
@@ -38,6 +40,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+		class UStaticMeshComponent* BombSpawner1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+		class UStaticMeshComponent* BombSpawner2;
+	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent* BombSpawnerCollision1;
+	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
+		class UBoxComponent * BombSpawnerCollision2;
+	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
+		class UArrowComponent* Bomb1SpawnPosition;
+	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
+		class UArrowComponent* Bomb2SpawnPosition;
 
 	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
 		UStaticMesh* BossBulletMesh = nullptr;
@@ -60,7 +75,7 @@ public:
 		UParticleSystem* FireParticle;
 
 	UPROPERTY(Category = "Attack Range",EditAnywhere, BlueprintReadOnly)
-		float AttackRange = 2000.0f;
+		float AttackRange = 1000.0f;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
