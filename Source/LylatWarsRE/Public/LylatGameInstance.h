@@ -17,5 +17,18 @@ class LYLATWARSRE_API ULylatGameInstance : public UGameInstance
 public:
 	ULylatGameInstance();
 
-	
+	UPROPERTY(Category = "Lylat Instance|Game", VisibleAnywhere)
+		int Score = 0;
+
+	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+		bool UseGyro = true;
+
+	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+		bool GyroFlipX = false;
+
+	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+		bool GyroFlipY = false;
+
+	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+		float GyroScale = 3.0f;
 };
