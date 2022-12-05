@@ -83,14 +83,26 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 		}
 	}
 
-	FVector Scale = EntityMesh->GetComponentScale();
+	if (FireCount % ChanceToTakeDamage)
+	{
+		DesactivateBossShield();
 
-	Scale -= FVector(ScaleDamage, ScaleDamage, ScaleDamage);
+		FVector Scale = EntityMesh->GetComponentScale();
 
-	if(EntityMesh->GetComponentScale().GetAbsMin() >= ScaleDamage  * 2)
-		this->EntityMesh->SetWorldScale3D(Scale);
+		Scale -= FVector(ScaleDamage, ScaleDamage, ScaleDamage);
 
-	ALylatEntity::TakeBulletDamage(bullet);
+		if(EntityMesh->GetComponentScale().GetAbsMin() >= ScaleDamage  * 2)
+			this->EntityMesh->SetWorldScale3D(Scale);
+
+
+		ALylatEntity::TakeBulletDamage(bullet);
+
+	}
+	else
+	{
+		ActivateBossShield();
+	}
+
 
 }
 
@@ -146,3 +158,26 @@ void ALylatBoss::BossShoot()
 		}
 		BulletCooldown = 0.6f;
 }
+
+void ALylatBoss::ActivateBossShield()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		for (int32 i = 0; i < mesh->GetNumMaterials(); i++)
+		{
+			mesh->SetMaterial(i, BossAuraMaterial);
+		}
+		mesh->MarkRenderStateDirty();
+	}
+}
+
+void ALylatBoss::DesactivateBossShield()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		mesh->OverrideMaterials.Empty();
+		mesh->MarkRenderStateDirty();
+	}
+}
+
+

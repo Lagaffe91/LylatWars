@@ -33,7 +33,6 @@ protected:
 
 	void BossShoot();
 
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -62,12 +61,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		TArray<ALylatWeakPoint*> BossWeakPoints;
 
+	UPROPERTY(Category = "Boss Aura Material", EditAnywhere, BlueprintReadOnly)
+		class UMaterialInterface* BossAuraMaterial;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "FireParticle")
 		UParticleSystem* FireParticle;
 
 	UPROPERTY(Category = "Attack Range",EditAnywhere, BlueprintReadOnly)
 		float AttackRange = 1000.0f;
+
+	UPROPERTY(Category = "Attack Range", EditAnywhere, BlueprintReadOnly)
+		int ChanceToTakeDamage = 100;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
@@ -80,11 +85,16 @@ public:
 	
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
+	void ActivateBossShield();
+	void DesactivateBossShield();
+
+	
 
 
 protected:
 	float BulletCooldown;
 	int FireCount;
+
 	
 
 
