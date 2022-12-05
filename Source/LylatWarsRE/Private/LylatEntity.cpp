@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "LylatNormalBullet.h"
 #include "LylatPlayerPawn.h"
+#include "LylatGameInstance.h"
 
 // Sets default values
 ALylatEntity::ALylatEntity()
@@ -106,16 +107,16 @@ void ALylatEntity::TakeEntityDamage(AActor* entity)
 
 void ALylatEntity::DestroyEntity(bool addScore)
 {
-	ALylatGameMode* GameMode = dynamic_cast<ALylatGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (addScore)
 	{
-		if (GameMode)
+		ULylatGameInstance* instance = Cast<ULylatGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		if (instance)
 		{
-			GameMode->AddScore(EntityScoreValue);
+			instance->Score += EntityScoreValue;
 		}
 		else
 		{
-			DebugError("Invalid gamemode, please assign ALylatGamemode inside world settings", 0);
+			DebugError("Invalid game instance, please assign ALylatGameInstance inside project settings", 0);
 		}
 	}
 	this->OnDestroy();

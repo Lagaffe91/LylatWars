@@ -17,18 +17,18 @@ class LYLATWARSRE_API ULylatGameInstance : public UGameInstance
 public:
 	ULylatGameInstance();
 
-	UPROPERTY(Category = "Lylat Instance|Game", VisibleAnywhere)
+	UPROPERTY(Category = "Lylat Instance|Game", EditAnywhere, BlueprintReadWrite)
 		int Score = 0;
 
-	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		bool UseGyro = true;
 
-	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		bool GyroFlipX = false;
 
-	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		bool GyroFlipY = false;
 
-	UPROPERTY(Category = "Lylat Instance|Gyro", VisibleAnywhere)
+	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		float GyroScale = 3.0f;
 };

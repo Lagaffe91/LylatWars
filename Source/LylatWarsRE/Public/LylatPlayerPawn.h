@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "LylatNormalBullet.h"
 #include "LylatBombBullet.h"
-
+#include "LylatGameInstance.h"
 #include "LylatEntity.h"
 #include "LylatPlayerPawn.generated.h"
 
@@ -180,6 +180,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionUseBomb();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Player|Events")
+		void PauseEvent();
+	void PauseEvent_Implementation();
+
 	void UpdateDash(float DeltaTime);
 	void UpdateShooting(float DeltaTime);
 	void UpdatePlayer(float DeltaTime);
@@ -205,6 +209,7 @@ protected:
 	FVector oldDir;
 	FVector defaultPlayerPos;
 	FVector defaultPlayerRot;
+	ULylatGameInstance* instance = nullptr;
 
 	/**Security to avoid weird deceleration behaviour*/
 	bool DashShouldDecelerate = false;

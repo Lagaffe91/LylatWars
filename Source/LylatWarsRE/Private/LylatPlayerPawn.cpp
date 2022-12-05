@@ -49,6 +49,8 @@ void ALylatPlayerPawn::BeginPlay()
 	{
 		DebugError("failed to grab rail reference", 0);
 	}
+	instance = Cast<ULylatGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!instance) DebugError("Invalid game instance, please assign ALylatGameInstance inside project settings", 0);
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -76,15 +78,16 @@ void ALylatPlayerPawn::MovementGyroInput(float deltaTime)
 	}
 	else
 	{
+		
 		if (r == EDeviceScreenOrientation::LandscapeLeft)
 		{
-			gyroInput.Y -= rotation.X * PlayerMaxSpeed * deltaTime * 3.0f;
+			gyroInput.Y -= rotation.X * PlayerMaxSpeed * deltaTime * (instance->GyroFlipX ? -instance->GyroScale : instance->GyroScale);
 		}
 		else
 		{
-			gyroInput.Y += rotation.X * PlayerMaxSpeed * deltaTime * 3.0f;
+			gyroInput.Y += rotation.X * PlayerMaxSpeed * deltaTime * (instance->GyroFlipX ? -instance->GyroScale : instance->GyroScale);
 		}
-		gyroInput.X -= rotation.Y * PlayerMaxSpeed * deltaTime * 3.0f;
+		gyroInput.X -= rotation.Y * PlayerMaxSpeed * deltaTime * (instance->GyroFlipY ? -instance->GyroScale : instance->GyroScale);
 	}
 }
 
@@ -135,6 +138,10 @@ void ALylatPlayerPawn::ActionUseBomb()
 		Projectile->FireInDirection(LaunchDirection, this, true);
 	}
 	BombCount--;
+}
+
+void ALylatPlayerPawn::PauseEvent_Implementation()
+{
 }
 
 void ALylatPlayerPawn::UpdateDash(float DeltaTime)
@@ -315,7 +322,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 	UpdateDash(DeltaTime);
-	MovementGyroInput(DeltaTime);
+	if (instance && instance->UseGyro) MovementGyroInput(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -330,6 +337,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Dash", IE_Released, this, &ALylatPlayerPawn::ActionStopDash);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ALylatPlayerPawn::ActionShoot);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &ALylatPlayerPawn::ActionStopShoot);
+	PlayerInputComponent->BindAction("Back", IE_Pressed, this, &ALylatPlayerPawn::PauseEvent);
 	PlayerInputComponent->BindAction("ResetGyro", IE_Pressed, this, &ALylatPlayerPawn::ActionResetGyro);
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ALylatPlayerPawn::TouchDown);
 	PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ALylatPlayerPawn::TouchDrag);
