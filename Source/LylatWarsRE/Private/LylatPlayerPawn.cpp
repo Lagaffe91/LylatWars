@@ -6,6 +6,7 @@
 #include "LylatPlayerRail.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
 
 #include "DebugString.h"
 
@@ -60,30 +61,30 @@ void ALylatPlayerPawn::MoveRightInput(float input)
 	Velocity.Y += input * PlayerMaxSpeed;
 }
 
-void ALylatPlayerPawn::MovementGyroInput(FVector value)
+void ALylatPlayerPawn::MovementGyroInput(float deltaTime)
 {
-	//Debug("Gyro: %.2f %.2f %.2f", value.X, value.Y, value.Z);
+	FVector tilt;
+	FVector rotation;
+	FVector gravity;
+	FVector acc;
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputMotionState(tilt, rotation, gravity, acc);
+	EDeviceScreenOrientation r = FGenericPlatformMisc::GetDeviceOrientation();
 	if (resetGyro)
 	{
-		defaultRotation = FQuat::MakeFromEuler(value).Inverse();
 		gyroInput = FVector2D::ZeroVector;
 		resetGyro = false;
 	}
 	else
 	{
-		FQuat deltaRotation = FQuat::MakeFromEuler(value) * defaultRotation;
-		float angle = FMath::RadiansToDegrees(deltaRotation.GetAngle());
-		float tmp = FMath::Abs(angle);
-		if (tmp > 0.1f && tmp < 3.0f)
+		if (r == EDeviceScreenOrientation::LandscapeLeft)
 		{
-			FVector axis = deltaRotation.GetForwardVector();
-			gyroInput.Y = axis.Y * PlayerMaxSpeed * 70.0f;
-			gyroInput.X = axis.Z * PlayerMaxSpeed * -70.0f;
+			gyroInput.Y -= rotation.X * PlayerMaxSpeed * deltaTime * 3.0f;
 		}
 		else
 		{
-			gyroInput = FVector2D::ZeroVector;
+			gyroInput.Y += rotation.X * PlayerMaxSpeed * deltaTime * 3.0f;
 		}
+		gyroInput.X -= rotation.Y * PlayerMaxSpeed * deltaTime * 3.0f;
 	}
 }
 
@@ -314,6 +315,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 	UpdateDash(DeltaTime);
+	MovementGyroInput(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -323,7 +325,7 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis("Forward", this, &ALylatPlayerPawn::MoveUpInput);
 	PlayerInputComponent->BindAxis("Right", this, &ALylatPlayerPawn::MoveRightInput);
-	PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementGyroInput);
+	//PlayerInputComponent->BindVectorAxis("Tilt", this, &ALylatPlayerPawn::MovementGyroInput);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ALylatPlayerPawn::ActionDash);
 	PlayerInputComponent->BindAction("Dash", IE_Released, this, &ALylatPlayerPawn::ActionStopDash);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &ALylatPlayerPawn::ActionShoot);

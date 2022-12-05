@@ -161,7 +161,7 @@ protected:
 
 	void MoveUpInput(float input);
 	void MoveRightInput(float input);
-	void MovementGyroInput(FVector value);
+	void MovementGyroInput(float deltaTime);
 	void TouchDown(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchDrag(ETouchIndex::Type FingerIndex, FVector Location);
 	void TouchUp(ETouchIndex::Type FingerIndex, FVector Location);
@@ -205,7 +205,6 @@ protected:
 	FVector oldDir;
 	FVector defaultPlayerPos;
 	FVector defaultPlayerRot;
-	FQuat defaultRotation;
 
 	/**Security to avoid weird deceleration behaviour*/
 	bool DashShouldDecelerate = false;

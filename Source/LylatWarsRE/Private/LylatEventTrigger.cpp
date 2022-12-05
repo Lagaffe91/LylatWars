@@ -51,6 +51,6 @@ void ALylatEventTrigger::HitboxBeginOverlap(UPrimitiveComponent* OverlappedCompo
 
 void ALylatEventTrigger::ResolveEvent_Implementation()
 {
-	Debug("Event !");
+	Debug("Event !",0);
 }
 
