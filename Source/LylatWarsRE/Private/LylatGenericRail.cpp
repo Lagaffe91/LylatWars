@@ -23,6 +23,12 @@ void ALylatGenericRail::BeginPlay()
 // Called every frame
 void ALylatGenericRail::Tick(float DeltaTime)
 {
+	if(!IsActivated)
+	{
+		return;
+	}
+
+
 	Super::Tick(DeltaTime);
 
 	if (railStartDelay > 0)
