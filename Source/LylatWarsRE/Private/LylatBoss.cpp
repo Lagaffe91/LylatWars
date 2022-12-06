@@ -21,6 +21,7 @@ ALylatBoss::ALylatBoss()
 	Bomb2SpawnPosition = CreateDefaultSubobject<UArrowComponent>(TEXT("Bomb2Spawn"));
 	Bomb2SpawnPosition->SetupAttachment(EntityMesh);
 
+	EntityLife = 1;
 	BulletCooldown = 0.0f;
 	FireCount = 0;
 }
@@ -76,32 +77,16 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 	{
 		if (!child->IsActorBeingDestroyed())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, child->GetName());
+			ActivateBossAura();
 			return;
 		}
 	}
-
-	if (FireCount % BossAuraRate)
+	if (!ShieldDesactivated)
 	{
 		DesactivateBossAura();
-
-		FVector Scale = EntityMesh->GetComponentScale();
-
-		Scale -= FVector(ScaleDamage, ScaleDamage, ScaleDamage);
-
-		if(EntityMesh->GetComponentScale().GetAbsMin() >= ScaleDamage  * 2)
-			this->EntityMesh->SetWorldScale3D(Scale);
-
-
-		ALylatEntity::TakeBulletDamage(bullet);
-
+		ShieldDesactivated = true;
 	}
-	else
-	{
-		ActivateBossAura();
-	}
-
-
+	ALylatEnemy::TakeBulletDamage(bullet);
 }
 
 
@@ -140,12 +125,14 @@ void ALylatBoss::BossShoot()
 
 				if (!(FireCount % FireRate))
 				{
+					Projectile->SetInitialSpeed(BulletSpeed);
 					if (BossBombMesh)
 						Projectile->SetBulletMesh(BossBombMesh);
 					Projectile->FireInDirection(LaunchDirection, this);
 				}
 				else
 				{
+					Projectile->SetInitialSpeed(BulletSpeed);
 					if (BossBulletMesh)
 						Projectile->SetBulletMesh(BossBulletMesh);
 					Projectile->FireInDirection(LaunchDirection, this);
@@ -163,7 +150,7 @@ void ALylatBoss::ActivateBossAura()
 	{
 		for (int32 i = 0; i < mesh->GetNumMaterials(); i++)
 		{
-			mesh->SetMaterial(i, BossAuraMaterial);
+			mesh->OverrideMaterials.Add(BossAuraMaterial);
 		}
 		mesh->MarkRenderStateDirty();
 	}

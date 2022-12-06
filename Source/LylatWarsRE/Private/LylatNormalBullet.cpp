@@ -38,6 +38,11 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 	SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
 }
 
+void ALylatNormalBullet::SetInitialSpeed(float InitialSpeed)
+{
+	BulletMovement->InitialSpeed = InitialSpeed;
+}
+
 void ALylatNormalBullet::FireInDirection(const FVector& ShootDirection, AActor* ownerIn, bool playerSpawned)
 {
 	BulletMovement->Velocity = ShootDirection * BulletMovement->InitialSpeed;

@@ -24,6 +24,8 @@ public:
 	ALylatBoss();
 	void BasicMovement(float deltaTime);
 
+private:
+	bool ShieldDesactivated = false;
 protected:
 	// Called when the game starts or when spawned
 
@@ -78,25 +80,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
 		int FireRate = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
+		float BulletSpeed = 500.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss Scale Damage")
 		float ScaleDamage = 0.05f;
 
 	void Fire();
 	
-	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
 
-	
-
-
 protected:
 	float BulletCooldown;
 	int FireCount;
-
-	
-
-
 
 };
