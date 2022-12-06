@@ -125,6 +125,10 @@ void ALylatEntity::DestroyEntity(bool addScore)
 		}
 	}
 	this->OnDestroy();
+	if (Explosion_BP)
+	{
+		GetWorld()->SpawnActor<AActor>(Explosion_BP, GetActorLocation(), GetActorRotation());
+	}
 	Destroy();
 }
 

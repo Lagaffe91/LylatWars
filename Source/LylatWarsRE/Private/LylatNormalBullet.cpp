@@ -1,4 +1,5 @@
 #include "LylatNormalBullet.h"
+
 #include "LylatEntity.h"
 #include "DebugString.h"
 #include "LylatPlayerPawn.h"
@@ -30,7 +31,7 @@ ALylatNormalBullet::ALylatNormalBullet(const FObjectInitializer& ObjectInitializ
 	BulletMovement->Bounciness = 0.3f;
 	BulletMovement->ProjectileGravityScale = 0.0f;
 	RootComponent = CollisionComponent;
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = BulletLifeTime;
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
@@ -47,6 +48,7 @@ void ALylatNormalBullet::FireInDirection(const FVector& ShootDirection, AActor* 
 // Called when the game starts or when spawned
 void ALylatNormalBullet::BeginPlay()
 {
+	InitialLifeSpan = BulletLifeTime;
 	Super::BeginPlay();
 
 	CollisionComponent->SetGenerateOverlapEvents(true);

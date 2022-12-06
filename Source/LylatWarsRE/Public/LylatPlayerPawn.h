@@ -172,6 +172,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionDash();
 
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void ActionStopDash();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -183,6 +184,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Player|Events")
 		void PauseEvent();
 	void PauseEvent_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Player|Events")
+		void DeathEvent();
+	void DeathEvent_Implementation();
 
 	void UpdateDash(float DeltaTime);
 	void UpdateShooting(float DeltaTime);

@@ -144,6 +144,10 @@ void ALylatPlayerPawn::PauseEvent_Implementation()
 {
 }
 
+void ALylatPlayerPawn::DeathEvent_Implementation()
+{
+}
+
 void ALylatPlayerPawn::UpdateDash(float DeltaTime)
 {
 	if(IsDashing)
@@ -323,6 +327,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	UpdateCamera(DeltaTime);
 	UpdateDash(DeltaTime);
 	if (instance && instance->UseGyro) MovementGyroInput(DeltaTime);
+	else gyroInput = FVector2D::ZeroVector;
 }
 
 // Called to bind functionality to input
@@ -346,12 +351,22 @@ void ALylatPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ALylatPlayerPawn::DestroyEntity(bool addScore)
 {
-	//TODO
+	DisableInput(this->GetController<APlayerController>());
+	DeathEvent();
+	if (PlayerRail)
+	{
+		PlayerRail->Deactivate();
+	}
+	if (Explosion_BP)
+	{
+		GetWorld()->SpawnActor<AActor>(Explosion_BP, GetActorLocation(), GetActorRotation());
+	}
+	EntityMesh->SetVisibility(false,true);
 }
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
 {
-	UGameplayStatics::ProjectWorldToScreen((APlayerController*)this->GetController(), oldDir * CrosshairDistance + EntityMesh->GetComponentLocation(), CrosshairPosition);
+	UGameplayStatics::ProjectWorldToScreen(this->GetController<APlayerController>(), oldDir * CrosshairDistance + EntityMesh->GetComponentLocation(), CrosshairPosition);
 	CrosshairPosition = FVector2D(FMath::Clamp(CrosshairPosition.X, -50.0f, ViewportSize.X + 50.0f), FMath::Clamp(CrosshairPosition.Y, -50.0f, ViewportSize.Y + 50.0f));
 	oldDir = this->EntityMesh->GetForwardVector();
 }

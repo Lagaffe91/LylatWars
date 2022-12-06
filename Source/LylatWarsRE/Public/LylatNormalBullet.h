@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,6 +23,9 @@ public:
 
 	UPROPERTY(Category = "Lylat Bullet", EditAnywhere, BlueprintReadOnly)
 		float BulletSpeed = 3000.0f;
+
+	UPROPERTY(Category = "Lylat Bullet", EditAnywhere, BlueprintReadOnly)
+		float BulletLifeTime = 3.0f;
 	AActor* owner = nullptr;
 	bool isPlayerSpawned = false;
 public:	

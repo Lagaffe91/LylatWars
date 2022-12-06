@@ -22,6 +22,11 @@ void ALylatJeffEnemy::BeginPlay()
 
 void ALylatJeffEnemy::Behaviour_Implementation(float DeltaTime)
 {
+	if (!PlayerReference)
+	{
+		DebugError("NO PLAYER REFERENCE      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",0);
+		return;
+	}
 	if (JeffShouldUpdateQuat)
 	{
 		UpdateQuat();

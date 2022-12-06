@@ -75,6 +75,10 @@ public:
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
 		TSubclassOf<ALylatNormalBullet> BulletType;
 
+	/**Blueprint of the explosion effect on death*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		TSubclassOf<AActor> Explosion_BP;
+
 public:
 
 	UFUNCTION()
