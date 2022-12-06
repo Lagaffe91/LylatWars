@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "LylatGameInstance.h"
 
 ULylatGameInstance::ULylatGameInstance()
@@ -10,4 +7,5 @@ ULylatGameInstance::ULylatGameInstance()
 	GyroFlipX = false;
 	GyroFlipY = false;
 	GyroScale = 3.0f;
+	DrawDebug = false;
 }

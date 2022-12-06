@@ -16,7 +16,7 @@ ALylatJeffEnemy::ALylatJeffEnemy()
 void ALylatJeffEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	defaultRot = TurretMesh->GetRelativeRotation().Euler().Z;
 	UpdateQuat();
 }
 
@@ -62,8 +62,10 @@ bool ALylatJeffEnemy::FaceTowardsPlayer()
 	dir.Normalize();
 	dir = invRotation * dir;
 	FVector targetRotation = dir.ToOrientationQuat().Euler();
+	targetRotation.Z -= defaultRot;
 	if (targetRotation.Z < -JeffHorizontalRange || targetRotation.Z > JeffHorizontalRange ||
 		targetRotation.Y < -JeffVerticalMinRange || targetRotation.Y > JeffVerticalMaxRange) return false;
+	targetRotation.Z += defaultRot;
 	TurretMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0, 0, targetRotation.Z)));
 	CannonMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0,targetRotation.Y,0)));
 	return true;

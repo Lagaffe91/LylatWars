@@ -31,4 +31,7 @@ public:
 
 	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		float GyroScale = 3.0f;
+
+	UPROPERTY(Category = "Lylat Instance|Debug", EditAnywhere, BlueprintReadWrite)
+		bool DrawDebug = false;
 };

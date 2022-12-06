@@ -103,6 +103,11 @@ void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
 void ALylatEntity::TakeEntityDamage(AActor* entity)
 {
 	TakeDamageEvent();
+	EntityLife--;
+	if (EntityLife <= 0)
+	{
+		DestroyEntity();
+	}
 }
 
 void ALylatEntity::DestroyEntity(bool addScore)

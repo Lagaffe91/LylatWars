@@ -76,4 +76,5 @@ public:
 	void UpdateQuat();
 protected:
 	FQuat invRotation;
+	float defaultRot = 0.0f;
 };

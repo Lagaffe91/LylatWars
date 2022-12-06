@@ -59,3 +59,16 @@ void ALylatEnemy::Desactivate()
 {
 	this->IsActivated = false;
 }
+
+void ALylatEnemy::TakeEntityDamage(AActor* entity)
+{
+	if (Cast<ALylatPlayerPawn>(entity))
+	{
+		EntityLife--;
+		Super::TakeEntityDamage(entity);
+		if (EntityLife <= 0)
+		{
+			DestroyEntity();
+		}
+	}
+}
