@@ -77,7 +77,7 @@ bool ALylatJeffEnemy::FaceTowardsPlayer()
 		CannonMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0,targetRotation.Y,0)));
 		return true;
 	}
-	DebugError("No Player Reference");
+	DebugError("No Player Reference",0);
 	return false;
 }
 
