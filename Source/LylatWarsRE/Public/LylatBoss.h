@@ -24,16 +24,19 @@ public:
 	ALylatBoss();
 	void BasicMovement(float deltaTime);
 
-private:
-	bool ShieldDesactivated = false;
 protected:
 	// Called when the game starts or when spawned
 
-	bool BombTurn = false;
 	float Speed = 500.0f;
 	virtual void BeginPlay() override;
+	float BulletCooldown;
+	int FireCount;
 
-	void BossShoot();
+private:
+	bool ShieldDesactivated = false;
+	bool BombTurn = false;
+	bool bMoveEight = false;
+	float eightShapeTimer = 0.0f;
 
 public:	
 	// Called every frame
@@ -91,9 +94,9 @@ public:
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
-
 protected:
-	float BulletCooldown;
-	int FireCount;
+	void BossShoot();
+private:
+	void EightMovement();
 
 };

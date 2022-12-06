@@ -9,7 +9,6 @@
 #include "LylatNormalBullet.h"
 #include "LylatWarsRE/Public/LylatHomingBullet.h"
 
-
 // Sets default values
 ALylatBoss::ALylatBoss()
 {
@@ -30,6 +29,22 @@ ALylatBoss::ALylatBoss()
 void ALylatBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	ActivateBossAura();
+	bMoveEight = true;
+	eightShapeTimer = 1;
+}
+
+
+void ALylatBoss::EightMovement()
+{
+	FVector Location = GetActorLocation();
+
+	if (eightShapeTimer >= PI * 2.0f)
+		eightShapeTimer = 0;
+	eightShapeTimer += GetWorld()->GetTimeSeconds();
+	Location.Y = Location.Y + sin(eightShapeTimer);
+	Location.Z = Location.Z + cos(eightShapeTimer);
+	SetActorLocation(Location, 1);
 }
 
 // Called every frame
@@ -41,9 +56,10 @@ void ALylatBoss::Tick(float DeltaTime)
 	if (EntityLife <= 0)
 		Destroy();
 	else if (BulletCooldown <= 0.0f)
-	{
 		BossShoot();
-	}
+
+	if (bMoveEight)
+		EightMovement();
 }
 
 // Called to bind functionality to input
@@ -89,59 +105,57 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 	ALylatEnemy::TakeBulletDamage(bullet);
 }
 
-
 void ALylatBoss::BossShoot()
 {
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		SpawnParams.Instigator = GetInstigator();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
 
-		BossPosition = GetActorLocation();
-		float distanceToTarget = FVector::DistSquared(PlayerReference->GetActorLocation(), BossPosition);
-		if (distanceToTarget <= AttackRange * AttackRange)
+	BossPosition = GetActorLocation();
+	float distanceToTarget = FVector::DistSquared(PlayerReference->GetActorLocation(), BossPosition);
+	if (distanceToTarget <= AttackRange * AttackRange)
+	{
+		FVector Location = BulletSpawnPosition->GetComponentLocation();
+
+		if (!(FireCount % FireRate))
 		{
-			FVector Location = BulletSpawnPosition->GetComponentLocation();
-
-			if (!(FireCount % FireRate))
+			if (BombTurn)
 			{
-				if (BombTurn)
-				{
-					Location = Bomb1SpawnPosition->GetComponentLocation();
-					BombTurn = !BombTurn;
-				}
-				else
-				{
-					Location = Bomb2SpawnPosition->GetComponentLocation();
-					BombTurn = !BombTurn;
-				}
+				Location = Bomb1SpawnPosition->GetComponentLocation();
+				BombTurn = !BombTurn;
 			}
-			FRotator Rotation = BossRotation.Rotation();
-			ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
-
-			if (Projectile)
+			else
 			{
-				FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - Location;
-				LaunchDirection.Normalize();
-
-				if (!(FireCount % FireRate))
-				{
-					Projectile->SetInitialSpeed(BulletSpeed);
-					if (BossBombMesh)
-						Projectile->SetBulletMesh(BossBombMesh);
-					Projectile->FireInDirection(LaunchDirection, this);
-				}
-				else
-				{
-					Projectile->SetInitialSpeed(BulletSpeed);
-					if (BossBulletMesh)
-						Projectile->SetBulletMesh(BossBulletMesh);
-					Projectile->FireInDirection(LaunchDirection, this);
-				}
-
-				FireCount++;
+				Location = Bomb2SpawnPosition->GetComponentLocation();
+				BombTurn = !BombTurn;
 			}
 		}
-		BulletCooldown = 0.6f;
+		FRotator Rotation = BossRotation.Rotation();
+		ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+
+		if (Projectile)
+		{
+			FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - Location;
+			LaunchDirection.Normalize();
+
+			Projectile->SetInitialSpeed(BulletSpeed);
+			if (!(FireCount % FireRate))
+			{
+				if (BossBombMesh)
+					Projectile->SetBulletMesh(BossBombMesh);
+				Projectile->FireInDirection(LaunchDirection, this);
+			}
+			else
+			{
+				if (BossBulletMesh)
+					Projectile->SetBulletMesh(BossBulletMesh);
+				Projectile->FireInDirection(LaunchDirection, this);
+			}
+
+			FireCount++;
+		}
+	}
+	BulletCooldown = 0.6f;
 }
 
 void ALylatBoss::ActivateBossAura()
@@ -164,5 +178,4 @@ void ALylatBoss::DesactivateBossAura()
 		mesh->MarkRenderStateDirty();
 	}
 }
-
 
