@@ -25,6 +25,9 @@ ALylatPlayerPawn::ALylatPlayerPawn()
 	Camera->SetRelativeLocationAndRotation(CameraPosition, FQuat::MakeFromEuler(CameraRotation));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = false;
+	BombSound = CreateDefaultSubobject<UAudioComponent>(TEXT("BombSound"));
+	BombSound->SetupAttachment(RootComponent);
+	BombSound->bAutoActivate = false;
 	isShooting = false;
 }
 
@@ -50,7 +53,14 @@ void ALylatPlayerPawn::BeginPlay()
 		DebugError("failed to grab rail reference", 0);
 	}
 	instance = Cast<ULylatGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	if (!instance) DebugError("Invalid game instance, please assign ALylatGameInstance inside project settings", 0);
+	if (!instance)
+	{
+		DebugError("Invalid game instance, please assign ALylatGameInstance inside project settings", 0);
+	}
+	else
+	{
+		instance->Score = 0;
+	}
 }
 
 void ALylatPlayerPawn::MoveUpInput(float input)
@@ -136,6 +146,7 @@ void ALylatPlayerPawn::ActionUseBomb()
 		// Set the projectile's initial trajectory.
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this, true);
+		BombSound->Play();
 	}
 	BombCount--;
 }
@@ -222,6 +233,7 @@ void ALylatPlayerPawn::UpdateShooting(float DeltaTime)
 		// Set the projectile's initial trajectory.
 		FVector LaunchDirection = EntityMesh->GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this, true);
+		PlayLaserSound();
 	}
 	ShootCD = ShootCooldown;
 }
@@ -276,9 +288,10 @@ void ALylatPlayerPawn::UpdateCamera(float DeltaTime)
 	CameraPosition.Y = PlayerPosition.Y * CameraFollowRatio + (1 - CameraFollowRatio) * (PlayerPosition.Y / PlayerPlaneSize.X * 2.0f) * (CameraDistance + PlayerPlaneSize.X * 0.5f);
 	Camera->SetRelativeLocation(CameraPosition);
 	FVector Position = GetActorLocation();
-	float length = PlayerTrailLength * (Position - LastPosition).Size() / DeltaTime;
-	length = FMath::Clamp(length, 0.5f, 5.0f);
+	float length = PlayerTrailLength * (Position - LastPosition).Size() / DeltaTime / 1000;
+	length = FMath::Clamp(length, 1.0f, 5.0f);
 	PlayerTrailMesh->SetRelativeScale3D(FVector(length, 1, 1) * DefaultTrailSize);
+	EngineSound->SetPitchMultiplier(length);
 	LastPosition = Position;
 }
 
@@ -362,6 +375,7 @@ void ALylatPlayerPawn::DestroyEntity(bool addScore)
 		GetWorld()->SpawnActor<AActor>(Explosion_BP, GetActorLocation(), GetActorRotation());
 	}
 	EntityMesh->SetVisibility(false,true);
+	EngineSound->Stop();
 }
 
 void ALylatPlayerPawn::ComputeCrosshairPosition()
@@ -384,13 +398,14 @@ void ALylatPlayerPawn::TakeEntityDamage(AActor* entity)
 	}
 }
 
-void ALylatPlayerPawn::TakeBulletDamage(ALylatNormalBullet* bullet)
+void ALylatPlayerPawn::TakeBulletDamage(ALylatNormalBullet* bullet, int amount)
 {
 	if (bullet->isPlayerSpawned) return;
-	EntityLife--;
+	EntityLife -= amount;
 	TakeDamageEvent();
 	if (EntityLife <= 0)
 	{
+		EntityLife = 0;
 		DestroyEntity();
 	}
 }

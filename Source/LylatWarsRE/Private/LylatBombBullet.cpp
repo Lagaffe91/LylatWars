@@ -45,7 +45,7 @@ void ALylatBombBullet::Tick(float DeltaTime)
 				for (AActor* enemy : FoundActors)
 				{
 					ALylatEnemy* e = Cast<ALylatEnemy>(enemy);
-					if (e != owner) e->TakeBulletDamage(this);
+					if (e != owner) e->TakeBulletDamage(this, BombDamage);
 				}
 			}
 		}
@@ -69,7 +69,7 @@ void ALylatBombBullet::HitboxBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		if ((bool)player != isPlayerSpawned)
 		{
 			//Debug("Touched %s, %d", *entity->GetName(), entity->EntityLife);
-			entity->TakeBulletDamage(this);
+			entity->TakeBulletDamage(this, BombDamage);
 			entity->EntityCurrentInvulneability = entity->EntityInvulneability;
 		}
 	}

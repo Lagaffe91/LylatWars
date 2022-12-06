@@ -96,6 +96,7 @@ void ALylatJeffEnemy::ShootBullet()
 		//Set the projectile's initial trajectory.
 		FVector LaunchDirection = CannonMesh->GetComponentQuat().GetForwardVector();
 		Projectile->FireInDirection(LaunchDirection, this);
+		PlayLaserSound();
 	}
 }
 

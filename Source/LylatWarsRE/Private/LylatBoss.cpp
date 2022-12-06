@@ -84,7 +84,7 @@ void ALylatBoss::Fire()
 
 }
 
-void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
+void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet, int amount)
 {
 	TArray<AActor *> childActors;
 	GetAllChildActors(childActors);
@@ -102,7 +102,7 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 		DesactivateBossAura();
 		ShieldDesactivated = true;
 	}
-	ALylatEnemy::TakeBulletDamage(bullet);
+	ALylatEnemy::TakeBulletDamage(bullet, amount);
 }
 
 void ALylatBoss::BossShoot()
@@ -151,7 +151,7 @@ void ALylatBoss::BossShoot()
 					Projectile->SetBulletMesh(BossBulletMesh);
 				Projectile->FireInDirection(LaunchDirection, this);
 			}
-
+			PlayLaserSound();
 			FireCount++;
 		}
 	}

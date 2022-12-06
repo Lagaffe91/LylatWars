@@ -50,6 +50,13 @@ public:
 	UPROPERTY(Category = "Lylat Bomb", EditAnywhere, BlueprintReadOnly)
 		float BombRadius = 3000.0f;
 
+	/*
+	* Damage dealt by the bomb (may be applied multiple times if BombTouchAllEnemies is set to true)
+	* BTW negative damage may heal entities
+	*/
+	UPROPERTY(Category = "Lylat Bomb", EditAnywhere, BlueprintReadOnly)
+		int BombDamage = 1;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

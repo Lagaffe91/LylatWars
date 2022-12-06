@@ -91,7 +91,7 @@ public:
 
 	void Fire();
 	
-	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
+	virtual void TakeBulletDamage(ALylatNormalBullet* bullet, int amount = 1) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
 protected:

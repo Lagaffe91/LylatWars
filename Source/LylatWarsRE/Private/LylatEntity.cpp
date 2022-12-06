@@ -30,6 +30,13 @@ ALylatEntity::ALylatEntity()
 	BulletSpawnPosition->SetupAttachment(EntityMesh);
 	EntityHitbox = CreateDefaultSubobject<UBoxComponent>(TEXT("Entity Hitbox"));
 	EntityHitbox->SetupAttachment(EntityMesh);
+
+	EngineSound = CreateDefaultSubobject<UAudioComponent>(TEXT("EngineSound"));
+	EngineSound->SetupAttachment(RootComponent);
+	EngineSound->bAutoActivate = false;
+	ShootSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSound"));
+	ShootSound->SetupAttachment(RootComponent);
+	ShootSound->bAutoActivate = false;
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +56,10 @@ void ALylatEntity::BeginPlay()
 		{
 			meshes.Add(mesh);
 		}
+	}
+	if (ShouldPlaySound)
+	{
+		EngineSound->Play();
 	}
 }
 
@@ -88,14 +99,15 @@ void ALylatEntity::HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	}
 }
 
-void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet)
+void ALylatEntity::TakeBulletDamage(ALylatNormalBullet* bullet, int amount)
 {
 	if (!bullet->isPlayerSpawned) return;
 	//Debug("Touched bullet", 0);
 	TakeDamageEvent();
-	EntityLife--;
+	EntityLife -= amount;
 	if (EntityLife <= 0)
 	{
+		EntityLife = 0;
 		DestroyEntity();
 	}
 }
@@ -124,12 +136,17 @@ void ALylatEntity::DestroyEntity(bool addScore)
 			DebugError("Invalid game instance, please assign ALylatGameInstance inside project settings", 0);
 		}
 	}
-	this->OnDestroy();
 	if (Explosion_BP)
 	{
-		GetWorld()->SpawnActor<AActor>(Explosion_BP, GetActorLocation(), GetActorRotation());
+		GetWorld()->SpawnActor<AActor>(Explosion_BP, EntityMesh->GetComponentLocation(), EntityMesh->GetComponentRotation());
 	}
+	this->OnDestroy();
 	Destroy();
+}
+
+void ALylatEntity::PlayLaserSound()
+{
+	ShootSound->Play();
 }
 
 void ALylatEntity::RailEnded_Implementation()

@@ -147,6 +147,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lylat Player|Mouvement|Dash")
 	class ALylatPlayerRail* PlayerRail;
 
+	/**Extra bonus super ultra mega bomb sound*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+	UAudioComponent* BombSound = nullptr;
 
 	// Sets default values for this pawn's properties
 	ALylatPlayerPawn();
@@ -229,7 +232,7 @@ public:
 
 	virtual void TakeEntityDamage(AActor* entity) override;
 
-	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
+	virtual void TakeBulletDamage(ALylatNormalBullet* bullet, int amount = 1) override;
 
 	virtual void DestroyEntity(bool addScore = true);
 };

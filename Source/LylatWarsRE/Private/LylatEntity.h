@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "LylatGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "LylatEntity.generated.h"
 
 class ALylatNormalBullet;
@@ -79,19 +80,34 @@ public:
 	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
 		TSubclassOf<AActor> Explosion_BP;
 
+	/**Should the entity plas sounds ?*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		bool ShouldPlaySound = false;
+
+	/**Sound of the engine, will play at initialisation*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		UAudioComponent* EngineSound = nullptr;
+
+	/**Shooting sound*/
+	UPROPERTY(Category = "Lylat Entity", EditAnywhere, BlueprintReadOnly)
+		UAudioComponent* ShootSound = nullptr;
+
 public:
 
 	UFUNCTION()
 	virtual void HitboxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	virtual void TakeBulletDamage(ALylatNormalBullet* bullet);
+	virtual void TakeBulletDamage(ALylatNormalBullet* bullet, int amount = 1);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void TakeEntityDamage(AActor* entity);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DestroyEntity(bool addScore = true);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayLaserSound();
 
 	/**if the entity is on a rail, Will be called when entity is at the end of the rail*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Lylat Entity|Events")

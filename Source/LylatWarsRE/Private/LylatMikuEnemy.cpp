@@ -59,5 +59,6 @@ void ALylatMikuEnemy::ShootBullet()
 		FVector LaunchDirection = this->PlayerReference->EntityMesh->GetComponentLocation() - this->EntityMesh->GetComponentLocation();
 		LaunchDirection.Normalize();
 		Projectile->FireInDirection(LaunchDirection, this);
+		PlayLaserSound();
 	}
 }
