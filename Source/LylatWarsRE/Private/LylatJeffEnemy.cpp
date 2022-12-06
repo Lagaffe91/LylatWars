@@ -62,18 +62,23 @@ void ALylatJeffEnemy::SetCooldown(const float& NewCooldown)
 
 bool ALylatJeffEnemy::FaceTowardsPlayer()
 {
-	FVector dir = PlayerReference->EntityMesh->GetComponentLocation() - CannonMesh->GetComponentLocation();
-	if (dir.Size() > JeffDetectionMaxRange) return false;
-	dir.Normalize();
-	dir = invRotation * dir;
-	FVector targetRotation = dir.ToOrientationQuat().Euler();
-	targetRotation.Z -= defaultRot;
-	if (targetRotation.Z < -JeffHorizontalRange || targetRotation.Z > JeffHorizontalRange ||
-		targetRotation.Y < -JeffVerticalMinRange || targetRotation.Y > JeffVerticalMaxRange) return false;
-	targetRotation.Z += defaultRot;
-	TurretMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0, 0, targetRotation.Z)));
-	CannonMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0,targetRotation.Y,0)));
-	return true;
+	if (PlayerReference)
+	{
+		FVector dir = PlayerReference->EntityMesh->GetComponentLocation() - CannonMesh->GetComponentLocation();
+		if (dir.Size() > JeffDetectionMaxRange) return false;
+		dir.Normalize();
+		dir = invRotation * dir;
+		FVector targetRotation = dir.ToOrientationQuat().Euler();
+		targetRotation.Z -= defaultRot;
+		if (targetRotation.Z < -JeffHorizontalRange || targetRotation.Z > JeffHorizontalRange ||
+			targetRotation.Y < -JeffVerticalMinRange || targetRotation.Y > JeffVerticalMaxRange) return false;
+		targetRotation.Z += defaultRot;
+		TurretMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0, 0, targetRotation.Z)));
+		CannonMesh->SetRelativeRotation(FQuat::MakeFromEuler(FVector(0,targetRotation.Y,0)));
+		return true;
+	}
+	DebugError("No Player Reference");
+	return false;
 }
 
 void ALylatJeffEnemy::ShootBullet()

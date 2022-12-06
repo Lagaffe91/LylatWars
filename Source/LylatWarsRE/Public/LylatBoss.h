@@ -27,11 +27,16 @@ public:
 protected:
 	// Called when the game starts or when spawned
 
-	bool BombTurn = false;
 	float Speed = 500.0f;
 	virtual void BeginPlay() override;
+	float BulletCooldown;
+	int FireCount;
 
-	void BossShoot();
+private:
+	bool ShieldDesactivated = false;
+	bool BombTurn = false;
+	bool bMoveEight = false;
+	float eightShapeTimer = 0.0f;
 
 public:	
 	// Called every frame
@@ -78,25 +83,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
 		int FireRate = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
+		float BulletSpeed = 500.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss Scale Damage")
 		float ScaleDamage = 0.05f;
 
 	void Fire();
 	
-	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
-
-	
-
-
 protected:
-	float BulletCooldown;
-	int FireCount;
-
-	
-
-
+	void BossShoot();
+private:
+	void EightMovement();
 
 };
