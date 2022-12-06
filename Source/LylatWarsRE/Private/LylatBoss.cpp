@@ -65,8 +65,6 @@ void ALylatBoss::Fire()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIREEEEEEE !!")));
 #endif
 
-
-
 }
 
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
@@ -83,9 +81,9 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 		}
 	}
 
-	if (FireCount % ChanceToTakeDamage)
+	if (FireCount % BossAuraRate)
 	{
-		DesactivateBossShield();
+		DesactivateBossAura();
 
 		FVector Scale = EntityMesh->GetComponentScale();
 
@@ -100,7 +98,7 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet)
 	}
 	else
 	{
-		ActivateBossShield();
+		ActivateBossAura();
 	}
 
 
@@ -159,7 +157,7 @@ void ALylatBoss::BossShoot()
 		BulletCooldown = 0.6f;
 }
 
-void ALylatBoss::ActivateBossShield()
+void ALylatBoss::ActivateBossAura()
 {
 	for (UStaticMeshComponent* mesh : meshes)
 	{
@@ -171,7 +169,7 @@ void ALylatBoss::ActivateBossShield()
 	}
 }
 
-void ALylatBoss::DesactivateBossShield()
+void ALylatBoss::DesactivateBossAura()
 {
 	for (UStaticMeshComponent* mesh : meshes)
 	{

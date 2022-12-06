@@ -72,7 +72,7 @@ public:
 		float AttackRange = 1000.0f;
 
 	UPROPERTY(Category = "Attack Range", EditAnywhere, BlueprintReadOnly)
-		int ChanceToTakeDamage = 100;
+		int BossAuraRate = 20;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
@@ -85,8 +85,8 @@ public:
 	
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet) override;
-	void ActivateBossShield();
-	void DesactivateBossShield();
+	void ActivateBossAura();
+	void DesactivateBossAura();
 
 	
 
