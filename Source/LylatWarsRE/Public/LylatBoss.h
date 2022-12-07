@@ -96,14 +96,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss Scale Damage")
 		float ScaleDamage = 0.05f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss")
+		float BossBulletCooldown = 0.6f;
+
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet, int amount = 1) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
 protected:
 	void BossShoot();
-	void BossBomb();
-	void BossBulletShoot();
 private:
 	void EightMovement();
 
