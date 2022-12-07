@@ -9,6 +9,7 @@
 
 #include "Particles/ParticleSystem.h"
 #include "Engine/TriggerBox.h"
+#include "LylatBombBullet.h"
 
 #include "LylatEnemy.h"
 #include "LylatBoss.generated.h"
@@ -44,16 +45,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(Category = "Boss Difficulty", EditDefaultsOnly)
+		int JeffLives = 5;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
 		class UArrowComponent* Bomb1SpawnPosition;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
 		class UArrowComponent* Bomb2SpawnPosition;
 
-	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
-		UStaticMesh* BossBulletMesh = nullptr;
-
-	UPROPERTY(Category = "Boss Bullet Mesh", EditDefaultsOnly)
-		UStaticMesh* BossBombMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		FVector BossPosition = FVector(0, 0, 0);
@@ -72,6 +70,9 @@ public:
 	UPROPERTY(Category = "Boss Aura Material", EditAnywhere, BlueprintReadOnly)
 		class UMaterialInterface* BossAuraMaterial;
 
+	UPROPERTY(Category = "Lylat Boss Bomb|Weapons", EditAnywhere, BlueprintReadOnly)
+		TSubclassOf<ALylatBombBullet> BombBulletType;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "FireParticle")
 		UParticleSystem* FireParticle;
@@ -87,18 +88,22 @@ public:
 		int FireRate = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
+		int BomRate = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attack Range")
 		float BulletSpeed = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Boss Scale Damage")
 		float ScaleDamage = 0.05f;
 
-	void Fire();
 	
 	virtual void TakeBulletDamage(ALylatNormalBullet* bullet, int amount = 1) override;
 	void ActivateBossAura();
 	void DesactivateBossAura();
 protected:
 	void BossShoot();
+	void BossBomb();
+	void BossBulletShoot();
 private:
 	void EightMovement();
 

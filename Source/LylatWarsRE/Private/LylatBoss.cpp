@@ -38,7 +38,7 @@ void ALylatBoss::BeginPlay()
 	for (auto child : childActors)
 	{
 		ALylatEntity *current = Cast<ALylatEntity>(child);
-		current->EntityLife = 5;
+		current->EntityLife = JeffLives;
 	}
 }
 
@@ -50,7 +50,9 @@ void ALylatBoss::EightMovement()
 	float worldTime = GetWorld()->GetTimeSeconds() * ShapeSpeed;
 	Location.Y = cos(worldTime) * ShapeScale;
 	Location.Z = (sin(worldTime * 2) / 2) * ShapeScale;
-	EntityMesh->SetRelativeLocation(Location);
+
+	FVector interpolation = FMath::Lerp(Location, EntityMesh->GetRelativeLocation(), 0.99f);
+	EntityMesh->SetRelativeLocation(interpolation);
 }
 
 // Called every frame
@@ -79,16 +81,6 @@ void ALylatBoss::BasicMovement(float deltaTime)
 	EntityMesh->SetRelativeLocationAndRotation(BossPosition, FQuat::MakeFromEuler(BossRotation));
 }
 
-void ALylatBoss::Fire()
-{
-
-#if 0
-	
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireParticle, this->EntityMesh->GetComponentLocation(), FRotator::ZeroRotator, true);
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("FIREEEEEEE !!")));
-#endif
-
-}
 
 void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet, int amount)
 {
@@ -111,7 +103,45 @@ void ALylatBoss::TakeBulletDamage(ALylatNormalBullet* bullet, int amount)
 	ALylatEnemy::TakeBulletDamage(bullet, amount);
 }
 
+
 void ALylatBoss::BossShoot()
+{
+
+	if ((FireCount % BomRate))
+	{
+		BossBomb();
+	}
+	else if ((FireCount % FireRate))
+	{
+		BossBulletShoot();
+	}
+
+	BulletCooldown = 0.9f;
+}
+
+
+void ALylatBoss::ActivateBossAura()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		for (int32 i = 0; i < mesh->GetNumMaterials(); i++)
+		{
+			mesh->OverrideMaterials.Add(BossAuraMaterial);
+		}
+		mesh->MarkRenderStateDirty();
+	}
+}
+
+void ALylatBoss::DesactivateBossAura()
+{
+	for (UStaticMeshComponent* mesh : meshes)
+	{
+		mesh->OverrideMaterials.Empty();
+		mesh->MarkRenderStateDirty();
+	}
+}
+
+void ALylatBoss::BossBomb()
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -137,7 +167,7 @@ void ALylatBoss::BossShoot()
 			}
 		}
 		FRotator Rotation = BossRotation.Rotation();
-		ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(ALylatNormalBullet::StaticClass(), Location, Rotation, SpawnParams);
+		ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(BombBulletType, Location, Rotation, SpawnParams);
 
 		if (Projectile)
 		{
@@ -145,43 +175,35 @@ void ALylatBoss::BossShoot()
 			LaunchDirection.Normalize();
 
 			Projectile->SetInitialSpeed(BulletSpeed);
-			if (!(FireCount % FireRate))
-			{
-				if (BossBombMesh)
-					Projectile->SetBulletMesh(BossBombMesh);
-				Projectile->FireInDirection(LaunchDirection, this);
-			}
-			else
-			{
-				if (BossBulletMesh)
-					Projectile->SetBulletMesh(BossBulletMesh);
-				Projectile->FireInDirection(LaunchDirection, this);
-			}
+			Projectile->FireInDirection(LaunchDirection, this);
 			PlayLaserSound();
 			FireCount++;
 		}
 	}
-	BulletCooldown = 0.6f;
 }
 
-void ALylatBoss::ActivateBossAura()
+void ALylatBoss::BossBulletShoot()
 {
-	for (UStaticMeshComponent* mesh : meshes)
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	BossPosition = GetActorLocation();
+	float distanceToTarget = FVector::DistSquared(PlayerReference->GetActorLocation(), BossPosition);
+	if (distanceToTarget <= AttackRange * AttackRange)
 	{
-		for (int32 i = 0; i < mesh->GetNumMaterials(); i++)
+		FVector Location = BulletSpawnPosition->GetComponentLocation();
+
+		FRotator Rotation = BossRotation.Rotation();
+		ALylatNormalBullet* Projectile = GetWorld()->SpawnActor<ALylatNormalBullet>(BulletType, Location, Rotation, SpawnParams);
+
+		if (Projectile)
 		{
-			mesh->OverrideMaterials.Add(BossAuraMaterial);
+			FVector LaunchDirection = PlayerReference->EntityMesh->GetComponentLocation() - Location;
+			LaunchDirection.Normalize();
+			Projectile->FireInDirection(LaunchDirection, this);
+			PlayLaserSound();
+			FireCount++;
 		}
-		mesh->MarkRenderStateDirty();
 	}
 }
-
-void ALylatBoss::DesactivateBossAura()
-{
-	for (UStaticMeshComponent* mesh : meshes)
-	{
-		mesh->OverrideMaterials.Empty();
-		mesh->MarkRenderStateDirty();
-	}
-}
-
