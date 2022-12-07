@@ -36,7 +36,6 @@ private:
 	bool ShieldDesactivated = false;
 	bool BombTurn = false;
 	bool bMoveEight = false;
-	float eightShapeTimer = 0.0f;
 
 public:	
 	// Called every frame
@@ -62,6 +61,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		FVector BossRotation = FVector(0, 0, 0);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float ShapeScale = 300.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float ShapeSpeed = 1.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 		TArray<ALylatWeakPoint*> BossWeakPoints;
