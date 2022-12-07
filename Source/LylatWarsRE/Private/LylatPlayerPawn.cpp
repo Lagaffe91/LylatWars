@@ -334,6 +334,7 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 		ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 		resetGyro = true;
 	}
+	if (EntityLife <= 0) return;
 	ComputeCrosshairPosition();
 	UpdateShooting(DeltaTime);
 	UpdatePlayer(DeltaTime);
