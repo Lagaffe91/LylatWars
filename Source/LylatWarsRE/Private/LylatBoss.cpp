@@ -32,6 +32,15 @@ void ALylatBoss::BeginPlay()
 	ActivateBossAura();
 	bMoveEight = true;
 	eightShapeTimer = 1;
+
+	//Give jeff turrets 5 life
+	TArray<AActor *> childActors;
+	GetAllChildActors(childActors);
+	for (auto child : childActors)
+	{
+		ALylatEntity *current = Cast<ALylatEntity>(child);
+		current->EntityLife = 5;
+	}
 }
 
 
