@@ -45,6 +45,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(Category = "Boss Difficulty", EditDefaultsOnly)
+		int JeffLives = 5;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)
 		class UArrowComponent* Bomb1SpawnPosition;
 	UPROPERTY(Category = "Boss Bullet", VisibleAnywhere, BlueprintReadOnly)

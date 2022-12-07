@@ -38,7 +38,7 @@ void ALylatBoss::BeginPlay()
 	for (auto child : childActors)
 	{
 		ALylatEntity *current = Cast<ALylatEntity>(child);
-		current->EntityLife = 5;
+		current->EntityLife = JeffLives;
 	}
 }
 
@@ -50,7 +50,9 @@ void ALylatBoss::EightMovement()
 	float worldTime = GetWorld()->GetTimeSeconds() * ShapeSpeed;
 	Location.Y = cos(worldTime) * ShapeScale;
 	Location.Z = (sin(worldTime * 2) / 2) * ShapeScale;
-	EntityMesh->SetRelativeLocation(Location);
+
+	FVector interpolation = FMath::Lerp(Location, EntityMesh->GetRelativeLocation(), 0.99f);
+	EntityMesh->SetRelativeLocation(interpolation);
 }
 
 // Called every frame
