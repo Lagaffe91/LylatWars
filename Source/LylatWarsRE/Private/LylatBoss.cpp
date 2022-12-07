@@ -31,7 +31,6 @@ void ALylatBoss::BeginPlay()
 	Super::BeginPlay();
 	ActivateBossAura();
 	bMoveEight = true;
-	eightShapeTimer = 1;
 
 	//Give jeff turrets 5 life
 	TArray<AActor *> childActors;
@@ -46,14 +45,12 @@ void ALylatBoss::BeginPlay()
 
 void ALylatBoss::EightMovement()
 {
-	FVector Location = GetActorLocation();
+	FVector Location = {0, 0, 0};
 
-	if (eightShapeTimer >= PI * 2.0f)
-		eightShapeTimer = 0;
-	eightShapeTimer += GetWorld()->GetTimeSeconds();
-	Location.Y = Location.Y + sin(eightShapeTimer);
-	Location.Z = Location.Z + cos(eightShapeTimer);
-	SetActorLocation(Location, 1);
+	float worldTime = GetWorld()->GetTimeSeconds() * ShapeSpeed;
+	Location.Y = cos(worldTime) * ShapeScale;
+	Location.Z = (sin(worldTime * 2) / 2) * ShapeScale;
+	EntityMesh->SetRelativeLocation(Location);
 }
 
 // Called every frame

@@ -36,7 +36,8 @@ private:
 	bool ShieldDesactivated = false;
 	bool BombTurn = false;
 	bool bMoveEight = false;
-	float eightShapeTimer = 0.0f;
+	float ShapeScale = 300.0f;
+	float ShapeSpeed = 1.0f;
 
 public:	
 	// Called every frame
