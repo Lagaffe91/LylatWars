@@ -43,14 +43,14 @@ void ALylatPlayerPawn::BeginPlay()
 	defaultPlayerRot = EntityMesh->GetRelativeRotation().Euler();
 	gyroInput = FVector2D::ZeroVector;
 
-	ALylatPlayerRail* playerRail = (ALylatPlayerRail*)UGameplayStatics::GetActorOfClass(this->GetWorld(), ALylatPlayerRail::StaticClass());
+	playerRail = Cast<ALylatPlayerRail>(UGameplayStatics::GetActorOfClass(this->GetWorld(), ALylatPlayerRail::StaticClass()));
 	if (playerRail)
 	{
 		this->PlayerRail = playerRail;
 	}
 	else
 	{
-		DebugError("failed to grab rail reference", 0);
+		DebugError("Failed to grab rail reference", 0);
 	}
 	instance = Cast<ULylatGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (!instance)
@@ -59,7 +59,10 @@ void ALylatPlayerPawn::BeginPlay()
 	}
 	else
 	{
-		instance->Score = 0;
+		if (playerRail)
+		{
+			EntityRailDistance = instance->RailPos;
+		}
 	}
 }
 
@@ -340,7 +343,14 @@ void ALylatPlayerPawn::Tick(float DeltaTime)
 	UpdatePlayer(DeltaTime);
 	UpdateCamera(DeltaTime);
 	UpdateDash(DeltaTime);
-	if (instance && instance->UseGyro) MovementGyroInput(DeltaTime);
+	if (instance)
+	{
+		if (instance->UseGyro) MovementGyroInput(DeltaTime);
+		if (playerRail)
+		{
+			instance->RailPos = EntityRailDistance;
+		}
+	}
 	else gyroInput = FVector2D::ZeroVector;
 }
 

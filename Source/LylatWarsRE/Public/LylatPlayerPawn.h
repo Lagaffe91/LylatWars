@@ -218,6 +218,7 @@ protected:
 	FVector defaultPlayerPos;
 	FVector defaultPlayerRot;
 	ULylatGameInstance* instance = nullptr;
+	ALylatPlayerRail* playerRail = nullptr;
 
 	/**Security to avoid weird deceleration behaviour*/
 	bool DashShouldDecelerate = false;

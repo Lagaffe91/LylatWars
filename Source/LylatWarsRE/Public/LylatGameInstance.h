@@ -20,6 +20,12 @@ public:
 	UPROPERTY(Category = "Lylat Instance|Game", EditAnywhere, BlueprintReadWrite)
 		int Score = 0;
 
+	UPROPERTY(Category = "Lylat Instance|Game", EditAnywhere, BlueprintReadWrite)
+		bool BossRoom = false;
+
+	UPROPERTY(Category = "Lylat Instance|Game", EditAnywhere, BlueprintReadWrite)
+		float RailPos = 0.0f;
+
 	UPROPERTY(Category = "Lylat Instance|Gyro", EditAnywhere, BlueprintReadWrite)
 		bool UseGyro = true;
 
