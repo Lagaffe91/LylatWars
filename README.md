@@ -1,4 +1,4 @@
-# TPS Starfox Lylat Wars
+# TPS Project : Lylat Wars
 
 This project is a take at a Rail Shooter Game.
 Our goal was to make a game for Android devices, using Unreal Engine.
@@ -34,7 +34,7 @@ To avoid this, press the Win key and click on the start button. The level should
 
 ## Author
 
-- [GAUTHIER Alexandre](a.gauthier@student.isartdigital.com)
+- [GAUTHIER Camille](al.gauthier@student.isartdigital.com)
 - [LUANDA Osvaldo](o.luanda@student.isartdigital.com)
 - [CARAULAN Victor](v.caraulan@student.isartdigital.com)
 - [LEPINE Quentin](q.lepine@student.isartdigital.com)
