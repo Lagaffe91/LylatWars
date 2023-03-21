@@ -34,7 +34,7 @@ To avoid this, press the Win key and click on the start button. The level should
 
 ## Author
 
-- [GAUTHIER Camille](al.gauthier@student.isartdigital.com)
-- [LUANDA Osvaldo](o.luanda@student.isartdigital.com)
-- [CARAULAN Victor](v.caraulan@student.isartdigital.com)
-- [LEPINE Quentin](q.lepine@student.isartdigital.com)
+- [GAUTHIER Camille](https://github.com/Lagaffe91)
+- [LUANDA Osvaldo](https://github.com/oloanda)
+- [CARAULAN Victor](https://github.com/exanimusfan)
+- [LEPINE Quentin](https://github.com/getItemFromBlock)
